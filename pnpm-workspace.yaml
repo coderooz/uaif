@@ -1,5 +1,6 @@
 packages:
-  - "packages/*"
-  - "integrations/*"
-  - "registry"
-  - "fixtures/*"
+  - 'packages/*'
+  - 'packages/adapters/*'
+  - 'integrations/*'
+  - 'registry'
+  - 'fixtures/*'

@@ -1,0 +1,40 @@
+{
+  "name": "@uiaf/firebase-auth",
+  "version": "0.1.0",
+  "description": "UIAF adapter for Firebase Authentication",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "firebase": "^11.0.0",
+    "@uiaf/core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "license": "MIT",
+  "author": "Coderooz",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coderooz/uiaf.git",
+    "directory": "packages/adapters/firebase-auth"
+  }
+}
