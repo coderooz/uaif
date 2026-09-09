@@ -61,8 +61,8 @@ export function detectProject(directory: string): ProjectDetection {
     }
   }
 
-  // Check for UIAF manifest
-  result.hasManifest = existsSync(join(directory, 'uiaf-manifest.json'));
+  // Check for UAIF manifest
+  result.hasManifest = existsSync(join(directory, 'uaif-manifest.json'));
 
   return result;
 }

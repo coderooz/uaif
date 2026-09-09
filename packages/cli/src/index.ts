@@ -1,10 +1,15 @@
 /**
- * UIAF CLI Package
+ * [File Info]
+ * Name: index.ts
+ * Purpose: Re-exports for programmatic use of the UAIF CLI
+ * Module: CLI
+ *
+ * UAIF CLI Package
  *
  * Re-exports for programmatic use of the CLI.
  *
- * @module @uiaf/cli
+ * @module @uaif/cli
  */
 
-export { CLIError } from '@uiaf/core';
-export type { CLICommand, CLIOptions } from '@uiaf/core';
+export { CLIError } from '@uaif/core';
+export type { CLICommand, CLIOptions } from '@uaif/core';

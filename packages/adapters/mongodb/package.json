@@ -1,7 +1,7 @@
 {
-  "name": "@uiaf/mongodb",
+  "name": "@uaif/mongodb",
   "version": "0.1.0",
-  "description": "UIAF adapter for MongoDB database",
+  "description": "UAIF adapter for MongoDB database",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "mongodb": "^6.0.0",
-    "@uiaf/core": "workspace:*"
+    "@uaif/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "5.9.3"

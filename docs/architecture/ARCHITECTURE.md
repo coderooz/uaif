@@ -9,13 +9,13 @@
 └────────────────────────────┬────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────┐
-│              UIAF Application Contracts                  │
+│              UAIF Application Contracts                  │
 │  AuthService / DatabaseService / StorageService /       │
 │  PaymentService / NotificationService                   │
 └────────────────────────────┬────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────┐
-│                    UIAF Core                             │
+│                    UAIF Core                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
 │  │   Contracts  │  │   Registry   │  │ Compatibility│  │
 │  │              │  │              │  │   Engine     │  │
@@ -27,7 +27,7 @@
 └────────────────────────────┬────────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────┐
-│                   UIAF Adapters                         │
+│                   UAIF Adapters                         │
 │  ┌──────────┐  ┌──────────┐  ┌──────────┐              │
 │  │  React   │  │  Next.js │  │   Expo   │              │
 │  └──────────┘  └──────────┘  └──────────┘              │
@@ -87,7 +87,7 @@
 ### Provider Addition Flow
 
 ```
-1. CLI receives: uai add auth clerk
+1. CLI receives: uaif add auth clerk
 2. Detection: identify project type, existing providers
 3. Compatibility: check Clerk x [target] = SUPPORTED?
 4. Registry: lookup Clerk provider definition
@@ -100,7 +100,7 @@
 ### Provider Switch Flow
 
 ```
-1. CLI receives: uai switch auth clerk firebase
+1. CLI receives: uaif switch auth clerk firebase
 2. Detection: identify current provider (Clerk)
 3. Compatibility: check Firebase x [target] = SUPPORTED?
 4. Migration: generate migration plan (dry-run or execute)
@@ -121,11 +121,11 @@
 ## Package Dependencies
 
 ```
-@uiaf/core (no dependencies)
+@uaif/core (no dependencies)
     ↑
-@uiaf/cli → @uiaf/core
+@uaif/cli → @uaif/core
     ↑
-@uiaf/adapter-react → @uiaf/core
-@uiaf/adapter-next → @uiaf/core
-@uiaf/adapter-expo → @uiaf/core
+@uaif/adapter-react → @uaif/core
+@uaif/adapter-next → @uaif/core
+@uaif/adapter-expo → @uaif/core
 ```

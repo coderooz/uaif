@@ -1,5 +1,5 @@
 {
-  "name": "uiaf",
+  "name": "uaif",
   "version": "0.1.0",
   "private": true,
   "description": "Universal Application Integration Framework — Provider-independent integration layer for modern applications",
@@ -26,7 +26,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "clean": "pnpm -r clean",
-    "uai": "pnpm --filter @uiaf/cli uai"
+    "uaif": "pnpm --filter @uaif/cli uaif"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.0.0",

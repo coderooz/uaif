@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '@uiaf/core';
+import type { ProviderDefinition } from '@uaif/core';
 import { clerkProvider } from './providers/auth/clerk';
 import { firebaseProvider } from './providers/auth/firebase';
 import { mongodbProvider } from './providers/database/mongodb';

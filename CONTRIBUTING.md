@@ -1,4 +1,4 @@
-# Contributing to UIAF
+# Contributing to UAIF
 
 Thank you for your interest in contributing to the Universal Application Integration Framework.
 
@@ -11,10 +11,10 @@ Thank you for your interest in contributing to the Universal Application Integra
 
 ## Project Structure
 
-UIAF is a monorepo managed with pnpm workspaces.
+UAIF is a monorepo managed with pnpm workspaces.
 
 ```
-uiaf/
+uaif/
 ├── packages/
 │   ├── core/          # Core contracts, types, registry
 │   ├── cli/           # CLI tool

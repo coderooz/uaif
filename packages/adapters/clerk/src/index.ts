@@ -1,12 +1,12 @@
 import type {
   AuthContract,
-  UIAFUser,
-  UIAFSession,
+  UAIFUser,
+  UAIFSession,
   LoginInput,
   RegisterInput,
   AuthResult,
   ContractMetadata,
-} from '@uiaf/core';
+} from '@uaif/core';
 
 export interface ClerkAdapterConfig {
   publishableKey: string;
@@ -22,7 +22,7 @@ export class ClerkAuthAdapter implements AuthContract {
     id: 'clerk',
     version: '0.1.0',
     segment: 'auth',
-    description: 'Clerk authentication adapter for UIAF',
+    description: 'Clerk authentication adapter for UAIF',
     contexts: ['client-component', 'server-component', 'route-handler'],
   };
 
@@ -63,7 +63,7 @@ export class ClerkAuthAdapter implements AuthContract {
       return { success: false, error: 'Failed to fetch user' };
     }
 
-    const session: UIAFSession = {
+    const session: UAIFSession = {
       id: data.id,
       user,
       createdAt: new Date(),
@@ -120,7 +120,7 @@ export class ClerkAuthAdapter implements AuthContract {
     }
   }
 
-  async getCurrentUser(): Promise<UIAFUser | null> {
+  async getCurrentUser(): Promise<UAIFUser | null> {
     if (!this.currentToken) return null;
 
     try {
@@ -147,7 +147,7 @@ export class ClerkAuthAdapter implements AuthContract {
     return user !== null;
   }
 
-  async getSession(): Promise<UIAFSession | null> {
+  async getSession(): Promise<UAIFSession | null> {
     if (!this.currentToken) return null;
 
     try {
@@ -178,7 +178,7 @@ export class ClerkAuthAdapter implements AuthContract {
     }
   }
 
-  async getUser(userId: string): Promise<UIAFUser | null> {
+  async getUser(userId: string): Promise<UAIFUser | null> {
     try {
       const response = await fetch(`https://api.clerk.com/v1/users/${userId}`, {
         headers: {
@@ -195,7 +195,7 @@ export class ClerkAuthAdapter implements AuthContract {
     }
   }
 
-  async updateUser(userId: string, data: Partial<UIAFUser>): Promise<UIAFUser> {
+  async updateUser(userId: string, data: Partial<UAIFUser>): Promise<UAIFUser> {
     const response = await fetch(`https://api.clerk.com/v1/users/${userId}`, {
       method: 'PATCH',
       headers: {
@@ -225,7 +225,7 @@ export class ClerkAuthAdapter implements AuthContract {
     });
   }
 
-  async verifyToken(token: string): Promise<UIAFUser | null> {
+  async verifyToken(token: string): Promise<UAIFUser | null> {
     try {
       const response = await fetch('https://api.clerk.com/v1/client', {
         headers: {
@@ -245,7 +245,7 @@ export class ClerkAuthAdapter implements AuthContract {
     }
   }
 
-  private mapUser(clerkUser: Record<string, unknown>): UIAFUser {
+  private mapUser(clerkUser: Record<string, unknown>): UAIFUser {
     return {
       id: clerkUser.id as string,
       email: ((clerkUser.email_addresses as Array<{ email_address: string }>)?.[0]?.email_address) || '',

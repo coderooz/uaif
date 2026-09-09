@@ -1,7 +1,7 @@
 {
-  "name": "@uiaf/clerk",
+  "name": "@uaif/clerk",
   "version": "0.1.0",
-  "description": "UIAF adapter for Clerk authentication",
+  "description": "UAIF adapter for Clerk authentication",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@clerk/nextjs": "^6.0.0",
     "@clerk/clerk-react": "^5.0.0",
-    "@uiaf/core": "workspace:*"
+    "@uaif/core": "workspace:*"
   },
   "devDependencies": {
     "typescript": "5.9.3"

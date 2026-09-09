@@ -1,10 +1,15 @@
 /**
- * UIAF Compatibility Engine
+ * [File Info]
+ * Name: compatibility.ts
+ * Purpose: Compatibility resolution engine for UAIF
+ * Module: Core Compatibility
+ *
+ * UAIF Compatibility Engine
  *
  * Resolves compatibility between project profiles, integration requests,
  * and provider registry data. Produces deterministic compatibility results.
  *
- * @module @uiaf/core/compatibility
+ * @module @uaif/core/compatibility
  */
 
 import type {
@@ -113,7 +118,7 @@ export function resolveCompatibility(
 // ============================================================================
 
 /**
- * Determine the UIAF target identifier from a project profile.
+ * Determine the UAIF target identifier from a project profile.
  */
 function resolveTarget(profile: ProjectProfile): string {
   switch (profile.project.type) {
@@ -256,7 +261,7 @@ function buildRecommendedImplementation(
   provider: ProviderDefinition,
   target: string,
 ): string {
-  const adapterPackage = provider.adapterPackage || `@uiaf/${target}-${provider.identity.id}`;
+  const adapterPackage = provider.adapterPackage || `@uaif/${target}-${provider.identity.id}`;
   return `Use ${adapterPackage} adapter for ${provider.identity.name} on ${target}`;
 }
 

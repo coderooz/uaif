@@ -1,7 +1,7 @@
 {
-  "name": "@uiaf/adapter-expo",
+  "name": "@uaif/adapter-expo",
   "version": "0.1.0",
-  "description": "UIAF Expo Adapter — Expo-specific integration adapter",
+  "description": "UAIF Expo Adapter — Expo-specific integration adapter",
   "author": "Coderooz <contact@coderooz.in>",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -23,7 +23,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@uiaf/core": "workspace:*"
+    "@uaif/core": "workspace:*"
   },
   "peerDependencies": {
     "expo": ">=50.0.0",

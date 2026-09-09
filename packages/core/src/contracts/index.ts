@@ -1,10 +1,15 @@
 /**
- * UIAF Contract Definitions
+ * [File Info]
+ * Name: contracts.ts
+ * Purpose: Framework-independent capability contracts for UAIF
+ * Module: Core Contracts
+ *
+ * UAIF Contract Definitions
  *
  * Framework-independent capability contracts that application code depends on.
  * Providers implement these contracts through adapters.
  *
- * @module @uiaf/core/contracts
+ * @module @uaif/core/contracts
  */
 
 import type { IntegrationSegment, ExecutionContext } from '../types/index.js';
@@ -44,7 +49,7 @@ export interface Contract<TInput = unknown, TOutput = unknown> {
 // ============================================================================
 
 /** User representation */
-export interface UIAFUser {
+export interface UAIFUser {
   /** Unique user identifier */
   id: string;
   /** Primary email address */
@@ -64,11 +69,11 @@ export interface UIAFUser {
 }
 
 /** Authentication session */
-export interface UIAFSession {
+export interface UAIFSession {
   /** Session identifier */
   id: string;
   /** Associated user */
-  user: UIAFUser;
+  user: UAIFUser;
   /** Session creation timestamp */
   createdAt: Date;
   /** Session expiration timestamp */
@@ -110,9 +115,9 @@ export interface AuthResult {
   /** Whether authentication was successful */
   success: boolean;
   /** Authenticated user (if successful) */
-  user?: UIAFUser;
+  user?: UAIFUser;
   /** Session (if successful) */
-  session?: UIAFSession;
+  session?: UAIFSession;
   /** Error message (if failed) */
   error?: string;
   /** Error code */
@@ -128,11 +133,11 @@ export interface AuthContract extends Contract<LoginInput, AuthResult> {
   /** Register new user */
   register(input: RegisterInput): Promise<AuthResult>;
   /** Get current authenticated user */
-  getCurrentUser(): Promise<UIAFUser | null>;
+  getCurrentUser(): Promise<UAIFUser | null>;
   /** Check if user is authenticated */
   isAuthenticated(): Promise<boolean>;
   /** Get current session */
-  getSession(): Promise<UIAFSession | null>;
+  getSession(): Promise<UAIFSession | null>;
 }
 
 // ============================================================================

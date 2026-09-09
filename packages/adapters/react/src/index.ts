@@ -1,13 +1,13 @@
 /**
- * UIAF React Adapter
+ * UAIF React Adapter
  *
- * React-specific adapter for UIAF integrations.
+ * React-specific adapter for UAIF integrations.
  * Provides React hooks and context for provider integrations.
  *
- * @module @uiaf/adapter-react
+ * @module @uaif/adapter-react
  */
 
-import type { AuthContract, DatabaseContract, StorageContract } from '@uiaf/core';
+import type { AuthContract, DatabaseContract, StorageContract } from '@uaif/core';
 
 /**
  * React adapter configuration.
@@ -20,7 +20,7 @@ export interface ReactAdapterConfig {
 }
 
 /**
- * Create a React adapter for UIAF integrations.
+ * Create a React adapter for UAIF integrations.
  */
 export function createReactAdapter(_config?: ReactAdapterConfig) {
   return {

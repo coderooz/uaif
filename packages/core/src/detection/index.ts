@@ -1,3 +1,10 @@
+/**
+ * [File Info]
+ * Name: detection.ts
+ * Purpose: Project environment detection for UAIF
+ * Module: Core Detection
+ */
+
 import type { ProjectProfile, ProjectType, RuntimeName, Platform } from '../types/index.js';
 
 export interface DetectionOptions {

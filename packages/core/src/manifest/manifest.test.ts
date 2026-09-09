@@ -5,7 +5,7 @@ describe('ManifestManager', () => {
   it('should create an empty manifest', () => {
     const manifest = createEmptyManifest('0.1.0');
     expect(manifest.version).toBe(1);
-    expect(manifest.uiafVersion).toBe('0.1.0');
+    expect(manifest.uaifVersion).toBe('0.1.0');
     expect(manifest.integrations).toEqual({});
   });
 
@@ -65,7 +65,7 @@ describe('ManifestManager', () => {
   it('should parse a manifest from JSON', () => {
     const json = JSON.stringify({
       version: 1,
-      uiafVersion: '0.1.0',
+      uaifVersion: '0.1.0',
       integrations: {
         auth: { provider: 'clerk' },
       },

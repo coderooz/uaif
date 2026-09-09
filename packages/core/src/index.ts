@@ -1,10 +1,15 @@
 /**
- * UIAF Core Package
+ * [File Info]
+ * Name: index.ts
+ * Purpose: Main entry point for @uaif/core
+ * Module: Core
  *
- * Main entry point for @uiaf/core.
- * Re-exports all core modules for use by other UIAF packages.
+ * UAIF Core Package
  *
- * @module @uiaf/core
+ * Main entry point for @uaif/core.
+ * Re-exports all core modules for use by other UAIF packages.
+ *
+ * @module @uaif/core
  */
 
 // Types
@@ -33,16 +38,16 @@ export type {
   AdapterDefinition,
   CLICommand,
   CLIOptions,
-  UIAFErrorCategory,
-  UIAFError,
+  UAIFErrorCategory,
+  UAIFError,
 } from './types/index.js';
 
 // Contracts
 export type {
   ContractMetadata,
   Contract,
-  UIAFUser,
-  UIAFSession,
+  UAIFUser,
+  UAIFSession,
   LoginInput,
   RegisterInput,
   AuthResult,
@@ -61,7 +66,7 @@ export type {
 
 // Errors
 export {
-  UIAFBaseError,
+  UAIFBaseError,
   CompatibilityError,
   IncompatibleFrameworkError,
   IncompatibleProviderError,

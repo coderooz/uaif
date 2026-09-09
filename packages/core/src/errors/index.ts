@@ -1,33 +1,38 @@
 /**
- * UIAF Error Definitions
+ * [File Info]
+ * Name: errors.ts
+ * Purpose: Normalized error types for UAIF
+ * Module: Core Errors
+ *
+ * UAIF Error Definitions
  *
  * Normalized error types for the Universal Application Integration Framework.
  * Provider-specific errors are normalized to these categories.
  *
- * @module @uiaf/core/errors
+ * @module @uaif/core/errors
  */
 
-import type { UIAFErrorCategory, UIAFError } from '../types/index.js';
+import type { UAIFErrorCategory, UAIFError } from '../types/index.js';
 
 // ============================================================================
-// Base UIAF Error
+// Base UAIF Error
 // ============================================================================
 
 /**
- * Base error class for all UIAF errors.
+ * Base error class for all UAIF errors.
  * Provides structured error information with category, code, and diagnostics.
  */
-export class UIAFBaseError extends Error {
-  public readonly category: UIAFErrorCategory;
+export class UAIFBaseError extends Error {
+  public readonly category: UAIFErrorCategory;
   public readonly code: string;
   public readonly retryable: boolean;
   public readonly retryAfter?: number;
   public readonly documentation?: string;
   public readonly diagnostics?: Record<string, unknown>;
 
-  constructor(error: UIAFError) {
+  constructor(error: UAIFError) {
     super(error.message);
-    this.name = 'UIAFBaseError';
+    this.name = 'UAIFBaseError';
     this.category = error.category;
     this.code = error.code;
     this.retryable = error.retryable;
@@ -36,7 +41,7 @@ export class UIAFBaseError extends Error {
     this.diagnostics = error.diagnostics;
   }
 
-  toJSON(): UIAFError {
+  toJSON(): UAIFError {
     return {
       category: this.category,
       code: this.code,
@@ -53,7 +58,7 @@ export class UIAFBaseError extends Error {
 // Compatibility Errors
 // ============================================================================
 
-export class CompatibilityError extends UIAFBaseError {
+export class CompatibilityError extends UAIFBaseError {
   constructor(
     message: string,
     code: string = 'COMPATIBILITY_ERROR',
@@ -96,7 +101,7 @@ export class IncompatibleProviderError extends CompatibilityError {
 // Configuration Errors
 // ============================================================================
 
-export class ConfigurationError extends UIAFBaseError {
+export class ConfigurationError extends UAIFBaseError {
   constructor(
     message: string,
     code: string = 'CONFIGURATION_ERROR',
@@ -135,7 +140,7 @@ export class InvalidManifestError extends ConfigurationError {
 // Provider Errors
 // ============================================================================
 
-export class ProviderError extends UIAFBaseError {
+export class ProviderError extends UAIFBaseError {
   constructor(
     message: string,
     code: string = 'PROVIDER_ERROR',
@@ -178,7 +183,7 @@ export class ProviderNotInstalledError extends ProviderError {
 // Contract Errors
 // ============================================================================
 
-export class ContractError extends UIAFBaseError {
+export class ContractError extends UAIFBaseError {
   constructor(
     message: string,
     code: string = 'CONTRACT_ERROR',
@@ -210,7 +215,7 @@ export class ContractViolationError extends ContractError {
 // Registry Errors
 // ============================================================================
 
-export class RegistryError extends UIAFBaseError {
+export class RegistryError extends UAIFBaseError {
   constructor(
     message: string,
     code: string = 'REGISTRY_ERROR',
@@ -231,7 +236,7 @@ export class RegistryError extends UIAFBaseError {
 // Resolver Errors
 // ============================================================================
 
-export class ResolverError extends UIAFBaseError {
+export class ResolverError extends UAIFBaseError {
   constructor(
     message: string,
     code: string = 'RESOLVER_ERROR',
@@ -253,7 +258,7 @@ export class ResolverError extends UIAFBaseError {
 // CLI Errors
 // ============================================================================
 
-export class CLIError extends UIAFBaseError {
+export class CLIError extends UAIFBaseError {
   constructor(
     message: string,
     code: string = 'CLI_ERROR',
@@ -274,7 +279,7 @@ export class CLIError extends UIAFBaseError {
 // Validation Errors
 // ============================================================================
 
-export class ValidationError extends UIAFBaseError {
+export class ValidationError extends UAIFBaseError {
   constructor(
     message: string,
     code: string = 'VALIDATION_ERROR',
@@ -296,15 +301,15 @@ export class ValidationError extends UIAFBaseError {
 // ============================================================================
 
 /**
- * Normalize provider-specific errors to UIAF error categories.
+ * Normalize provider-specific errors to UAIF error categories.
  * Preserves provider-specific diagnostic metadata.
  */
 export function normalizeError(
   error: unknown,
   provider: string,
   context?: string,
-): UIAFBaseError {
-  if (error instanceof UIAFBaseError) {
+): UAIFBaseError {
+  if (error instanceof UAIFBaseError) {
     return error;
   }
 

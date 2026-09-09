@@ -1,15 +1,20 @@
 #!/usr/bin/env node
 
 /**
- * UIAF CLI Entry Point
+ * [File Info]
+ * Name: cli.ts
+ * Purpose: UAIF CLI entry point
+ * Module: CLI
+ *
+ * UAIF CLI Entry Point
  *
  * Command-line interface for the Universal Application Integration Framework.
  *
- * @module @uiaf/cli
+ * @module @uaif/cli
  */
 
-import { CLIError } from '@uiaf/core';
-import type { CLICommand, CLIOptions } from '@uiaf/core';
+import { CLIError } from '@uaif/core';
+import type { CLICommand, CLIOptions } from '@uaif/core';
 
 // ============================================================================
 // CLI Configuration
@@ -18,13 +23,13 @@ import type { CLICommand, CLIOptions } from '@uiaf/core';
 const VERSION = '0.1.0';
 
 const HELP_TEXT = `
-uai — Universal Application Integration Framework CLI
+uaif — Universal Application Integration Framework CLI
 
 Usage:
-  uai <command> [options]
+  uaif <command> [options]
 
 Commands:
-  init                  Initialize UIAF in the current project
+  init                  Initialize UAIF in the current project
   detect                Detect project environment and capabilities
   plan                  Plan integration changes before applying
   add <segment> <provider>  Add a provider integration
@@ -46,15 +51,15 @@ Options:
   --help                Show this help message
 
 Examples:
-  uai init
-  uai detect
-  uai add auth clerk
-  uai switch auth clerk firebase
-  uai remove auth clerk
-  uai list
-  uai validate
-  uai doctor
-  uai plan auth clerk --dry-run
+  uaif init
+  uaif detect
+  uaif add auth clerk
+  uaif switch auth clerk firebase
+  uaif remove auth clerk
+  uaif list
+  uaif validate
+  uaif doctor
+  uaif plan auth clerk --dry-run
 `;
 
 // ============================================================================
@@ -135,7 +140,7 @@ async function main(): Promise<void> {
   const parsed = parseArgs(process.argv);
 
   if (parsed.showVersion) {
-    console.log(`uai v${VERSION}`);
+    console.log(`uaif v${VERSION}`);
     process.exit(0);
   }
 

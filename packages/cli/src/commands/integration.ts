@@ -1,19 +1,19 @@
-import { CLIError } from '@uiaf/core';
-import type { CLIOptions } from '@uiaf/core';
+import { CLIError } from '@uaif/core';
+import type { CLIOptions } from '@uaif/core';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 export async function addCommand(args: string[], options: CLIOptions): Promise<void> {
   if (args.length < 2) {
-    throw new CLIError('Usage: uai add <segment> <provider>', 'INVALID_ARGS');
+    throw new CLIError('Usage: uaif add <segment> <provider>', 'INVALID_ARGS');
   }
 
   const [segment, provider] = args;
   const dir = options.directory || process.cwd();
-  const manifestPath = join(dir, 'uiaf-manifest.json');
+  const manifestPath = join(dir, 'uaif-manifest.json');
 
   if (!existsSync(manifestPath)) {
-    throw new CLIError('No uiaf-manifest.json found. Run "uai init" first.', 'NO_MANIFEST');
+    throw new CLIError('No uaif-manifest.json found. Run "uaif init" first.', 'NO_MANIFEST');
   }
 
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
@@ -41,15 +41,15 @@ export async function addCommand(args: string[], options: CLIOptions): Promise<v
 
 export async function removeCommand(args: string[], options: CLIOptions): Promise<void> {
   if (args.length < 2) {
-    throw new CLIError('Usage: uai remove <segment> <provider>', 'INVALID_ARGS');
+    throw new CLIError('Usage: uaif remove <segment> <provider>', 'INVALID_ARGS');
   }
 
   const [segment, provider] = args;
   const dir = options.directory || process.cwd();
-  const manifestPath = join(dir, 'uiaf-manifest.json');
+  const manifestPath = join(dir, 'uaif-manifest.json');
 
   if (!existsSync(manifestPath)) {
-    throw new CLIError('No uiaf-manifest.json found.', 'NO_MANIFEST');
+    throw new CLIError('No uaif-manifest.json found.', 'NO_MANIFEST');
   }
 
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
@@ -78,22 +78,22 @@ export async function removeCommand(args: string[], options: CLIOptions): Promis
 
 export async function switchCommand(args: string[], options: CLIOptions): Promise<void> {
   if (args.length < 2) {
-    throw new CLIError('Usage: uai switch <segment> <new-provider>', 'INVALID_ARGS');
+    throw new CLIError('Usage: uaif switch <segment> <new-provider>', 'INVALID_ARGS');
   }
 
   const [segment, newProvider] = args;
   const dir = options.directory || process.cwd();
-  const manifestPath = join(dir, 'uiaf-manifest.json');
+  const manifestPath = join(dir, 'uaif-manifest.json');
 
   if (!existsSync(manifestPath)) {
-    throw new CLIError('No uiaf-manifest.json found. Run "uai init" first.', 'NO_MANIFEST');
+    throw new CLIError('No uaif-manifest.json found. Run "uaif init" first.', 'NO_MANIFEST');
   }
 
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
   const current = manifest.integrations?.[segment];
 
   if (!current) {
-    throw new CLIError(`No integration found for "${segment}" segment. Use "uai add" instead.`, 'NO_INTEGRATION');
+    throw new CLIError(`No integration found for "${segment}" segment. Use "uaif add" instead.`, 'NO_INTEGRATION');
   }
 
   if (current.provider === newProvider) {
@@ -120,7 +120,7 @@ export async function switchCommand(args: string[], options: CLIOptions): Promis
 
 export async function planCommand(args: string[], options: CLIOptions): Promise<void> {
   if (args.length < 2) {
-    throw new CLIError('Usage: uai plan <segment> <provider>', 'INVALID_ARGS');
+    throw new CLIError('Usage: uaif plan <segment> <provider>', 'INVALID_ARGS');
   }
 
   const [segment, provider] = args;

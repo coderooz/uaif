@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-UIAF needs to manage multiple packages: core, CLI, adapters, integrations, registry, fixtures, and tests. These packages have clear dependency relationships and need to be developed and published together.
+UAIF needs to manage multiple packages: core, CLI, adapters, integrations, registry, fixtures, and tests. These packages have clear dependency relationships and need to be developed and published together.
 
 ## Decision
 

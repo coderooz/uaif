@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '@uiaf/core';
+import type { ProviderDefinition } from '@uaif/core';
 
 export const s3Provider: ProviderDefinition = {
   identity: {
@@ -62,7 +62,7 @@ export const s3Provider: ProviderDefinition = {
     'Bucket policies',
     'S3 Transfer Acceleration',
   ],
-  adapterPackage: '@uiaf/adapter-s3',
+  adapterPackage: '@uaif/s3',
   packages: {
     node: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
     nextjs: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],

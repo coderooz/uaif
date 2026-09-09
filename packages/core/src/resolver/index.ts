@@ -1,3 +1,10 @@
+/**
+ * [File Info]
+ * Name: resolver.ts
+ * Purpose: Provider resolution logic for UAIF
+ * Module: Core Resolver
+ */
+
 import type { CompatibilityResult, CompatibilityStatus, ProviderDefinition, ProjectProfile, IntegrationSegment } from '../types/index.js';
 import { resolveCompatibility, resolveSegmentCompatibility, findBestProvider as findBestProviderCompat } from '../compatibility/index.js';
 

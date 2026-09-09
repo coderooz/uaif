@@ -1,8 +1,8 @@
-# UIAF — Universal Application Integration Framework
+# UAIF — Universal Application Integration Framework
 
 > Provider-independent integration layer for modern applications
 
-UIAF is a framework and tooling system for creating a stable application-facing integration layer between software applications and external services/providers while managing provider-specific implementations, framework/runtime differences, compatibility constraints, configuration, scaffolding, validation, migration, and lifecycle maintenance.
+UAIF is a framework and tooling system for creating a stable application-facing integration layer between software applications and external services/providers while managing provider-specific implementations, framework/runtime differences, compatibility constraints, configuration, scaffolding, validation, migration, and lifecycle maintenance.
 
 ## Problem
 
@@ -18,10 +18,10 @@ This creates migration friction, vendor lock-in, and makes it difficult to switc
 
 ## Solution
 
-UIAF introduces a stable contract layer between application code and external providers:
+UAIF introduces a stable contract layer between application code and external providers:
 
 ```
-Application → UIAF Contract → Adapter → Provider SDK
+Application → UAIF Contract → Adapter → Provider SDK
 ```
 
 A provider change requires updating integration configuration, not rewriting application business logic.
@@ -35,13 +35,13 @@ A provider change requires updating integration configuration, not rewriting app
 └──────────────────┬───────────────────┘
                    │
 ┌──────────────────▼───────────────────┐
-│      UIAF Application Contracts      │
+│      UAIF Application Contracts      │
 │  AuthService / DatabaseService /     │
 │  StorageService / PaymentService     │
 └──────────────────┬───────────────────┘
                    │
 ┌──────────────────▼───────────────────┐
-│          UIAF Adapters               │
+│          UAIF Adapters               │
 │  React / Next.js / Expo              │
 │  + provider-specific adapters        │
 └──────────────────┬───────────────────┘
@@ -57,11 +57,11 @@ A provider change requires updating integration configuration, not rewriting app
 
 | Package               | Description                                                |
 | --------------------- | ---------------------------------------------------------- |
-| `@uiaf/core`          | Contracts, types, registry, compatibility engine, resolver |
-| `@uiaf/cli`           | Command-line interface for managing integrations           |
-| `@uiaf/adapter-react` | React-specific integration adapter                         |
-| `@uiaf/adapter-next`  | Next.js-specific integration adapter                       |
-| `@uiaf/adapter-expo`  | Expo-specific integration adapter                          |
+| `@uaif/core`          | Contracts, types, registry, compatibility engine, resolver |
+| `@uaif/cli`           | Command-line interface for managing integrations           |
+| `@uaif/adapter-react` | React-specific integration adapter                         |
+| `@uaif/adapter-next`  | Next.js-specific integration adapter                       |
+| `@uaif/adapter-expo`  | Expo-specific integration adapter                          |
 
 ## Integration Segments
 
@@ -79,15 +79,15 @@ A provider change requires updating integration configuration, not rewriting app
 ## CLI Commands
 
 ```bash
-uai init                    # Initialize UIAF in current project
-uai detect                  # Detect project environment
-uai add auth clerk          # Add Clerk authentication
-uai switch auth clerk firebase  # Switch from Clerk to Firebase
-uai remove auth clerk       # Remove Clerk integration
-uai list                    # List current integrations
-uai validate                # Validate integration state
-uai doctor                  # Diagnose integration health
-uai plan auth clerk --dry-run  # Preview changes
+uaif init                    # Initialize UAIF in current project
+uaif detect                  # Detect project environment
+uaif add auth clerk          # Add Clerk authentication
+uaif switch auth clerk firebase  # Switch from Clerk to Firebase
+uaif remove auth clerk       # Remove Clerk integration
+uaif list                    # List current integrations
+uaif validate                # Validate integration state
+uaif doctor                  # Diagnose integration health
+uaif plan auth clerk --dry-run  # Preview changes
 ```
 
 ## Getting Started
@@ -103,7 +103,7 @@ pnpm build
 pnpm test
 
 # Use the CLI
-pnpm uai init
+pnpm uaif init
 ```
 
 ## Development
@@ -124,7 +124,7 @@ pnpm format
 
 ## Compatibility
 
-UIAF maintains explicit compatibility status for each provider-target combination:
+UAIF maintains explicit compatibility status for each provider-target combination:
 
 | Status                    | Description                      |
 | ------------------------- | -------------------------------- |
@@ -138,7 +138,7 @@ UIAF maintains explicit compatibility status for each provider-target combinatio
 ## Project Structure
 
 ```
-uiaf/
+uaif/
 ├── packages/
 │   ├── core/          # Core contracts, types, registry
 │   ├── cli/           # CLI tool

@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '@uiaf/core';
+import type { ProviderDefinition } from '@uaif/core';
 
 export const postgresqlProvider: ProviderDefinition = {
   identity: {
@@ -68,7 +68,7 @@ export const postgresqlProvider: ProviderDefinition = {
     'Seeding',
     'Prisma Studio',
   ],
-  adapterPackage: '@uiaf/adapter-postgresql',
+  adapterPackage: '@uaif/postgresql',
   packages: {
     node: ['prisma', '@prisma/client'],
     nextjs: ['prisma', '@prisma/client'],

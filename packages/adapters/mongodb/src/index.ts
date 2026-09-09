@@ -6,7 +6,7 @@ import type {
   DBDocument,
   QueryResult,
   ContractMetadata,
-} from '@uiaf/core';
+} from '@uaif/core';
 
 export interface MongoDBAdapterConfig {
   connectionString: string;
@@ -19,7 +19,7 @@ export class MongoDBAdapter<TDocument extends DBDocument = DBDocument> implement
     id: 'mongodb',
     version: '0.1.0',
     segment: 'database',
-    description: 'MongoDB database adapter for UIAF',
+    description: 'MongoDB database adapter for UAIF',
     contexts: ['server-component', 'route-handler', 'server-action'],
   };
 

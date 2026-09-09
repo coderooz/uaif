@@ -1,4 +1,4 @@
-import type { CompatibilityStatus, CompatibilityResult } from '@uiaf/core';
+import type { CompatibilityStatus, CompatibilityResult } from '@uaif/core';
 
 export interface CompatibilityMatrixEntry {
   provider: string;

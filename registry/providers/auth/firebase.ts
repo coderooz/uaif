@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '@uiaf/core';
+import type { ProviderDefinition } from '@uaif/core';
 
 export const firebaseProvider: ProviderDefinition = {
   identity: {
@@ -72,7 +72,7 @@ export const firebaseProvider: ProviderDefinition = {
     'Anonymous auth',
     'Custom claims',
   ],
-  adapterPackage: '@uiaf/adapter-firebase',
+  adapterPackage: '@uaif/firebase-auth',
   packages: {
     react: ['firebase', 'react-firebase-hooks'],
     nextjs: ['firebase', 'firebase-admin'],

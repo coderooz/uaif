@@ -1,7 +1,7 @@
 {
-  "name": "@uiaf/adapter-next",
+  "name": "@uaif/adapter-next",
   "version": "0.1.0",
-  "description": "UIAF Next.js Adapter — Next.js-specific integration adapter",
+  "description": "UAIF Next.js Adapter — Next.js-specific integration adapter",
   "author": "Coderooz <contact@coderooz.in>",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -23,7 +23,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@uiaf/core": "workspace:*"
+    "@uaif/core": "workspace:*"
   },
   "peerDependencies": {
     "next": ">=14.0.0",

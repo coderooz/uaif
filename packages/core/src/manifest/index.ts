@@ -1,3 +1,10 @@
+/**
+ * [File Info]
+ * Name: manifest.ts
+ * Purpose: Integration manifest management for UAIF
+ * Module: Core Manifest
+ */
+
 import type { IntegrationManifest, IntegrationSegment, SemVer } from '../types/index.js';
 import { InvalidManifestError } from '../errors/index.js';
 
@@ -7,7 +14,7 @@ export class ManifestManager {
   constructor(existingManifest?: IntegrationManifest) {
     this.manifest = existingManifest || {
       version: 1,
-      uiafVersion: '0.1.0',
+      uaifVersion: '0.1.0',
       integrations: {} as Record<IntegrationSegment, { provider: string; config?: Record<string, unknown> }>,
       metadata: {
         createdAt: new Date().toISOString(),
@@ -82,8 +89,8 @@ export class ManifestManager {
       errors.push('Manifest missing version field');
     }
 
-    if (!this.manifest.uiafVersion) {
-      errors.push('Manifest missing uiafVersion field');
+    if (!this.manifest.uaifVersion) {
+      errors.push('Manifest missing uaifVersion field');
     }
 
     for (const [segment, config] of Object.entries(this.manifest.integrations)) {
@@ -110,10 +117,10 @@ export function parseManifest(json: string): IntegrationManifest {
   }
 }
 
-export function createEmptyManifest(uiafVersion: SemVer): IntegrationManifest {
+export function createEmptyManifest(uaifVersion: SemVer): IntegrationManifest {
   return {
     version: 1,
-    uiafVersion,
+    uaifVersion,
     integrations: {} as Record<IntegrationSegment, { provider: string; config?: Record<string, unknown> }>,
     metadata: {
       createdAt: new Date().toISOString(),

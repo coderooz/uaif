@@ -1,7 +1,7 @@
 {
-  "name": "@uiaf/core",
+  "name": "@uaif/core",
   "version": "0.1.0",
-  "description": "UIAF Core — Contracts, types, registry, compatibility engine, and resolver",
+  "description": "UAIF Core — Contracts, types, registry, compatibility engine, and resolver",
   "author": "Coderooz <contact@coderooz.in>",
   "license": "MIT",
   "main": "./dist/index.js",

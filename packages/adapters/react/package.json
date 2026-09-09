@@ -1,7 +1,7 @@
 {
-  "name": "@uiaf/adapter-react",
+  "name": "@uaif/adapter-react",
   "version": "0.1.0",
-  "description": "UIAF React Adapter — React-specific integration adapter",
+  "description": "UAIF React Adapter — React-specific integration adapter",
   "author": "Coderooz <contact@coderooz.in>",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -23,7 +23,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@uiaf/core": "workspace:*"
+    "@uaif/core": "workspace:*"
   },
   "peerDependencies": {
     "react": ">=18.0.0"

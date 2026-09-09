@@ -35,7 +35,7 @@ importers:
       '@clerk/nextjs':
         specifier: ^6.0.0
         version: 6.39.6(next@16.3.4(@types/node@22.20.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
-      '@uiaf/core':
+      '@uaif/core':
         specifier: workspace:*
         version: link:../../core
       react:
@@ -51,7 +51,7 @@ importers:
 
   packages/adapters/cloudinary:
     dependencies:
-      '@uiaf/core':
+      '@uaif/core':
         specifier: workspace:*
         version: link:../../core
       cloudinary:
@@ -64,7 +64,7 @@ importers:
 
   packages/adapters/expo:
     dependencies:
-      '@uiaf/core':
+      '@uaif/core':
         specifier: workspace:*
         version: link:../../core
     devDependencies:
@@ -86,7 +86,7 @@ importers:
 
   packages/adapters/firebase-auth:
     dependencies:
-      '@uiaf/core':
+      '@uaif/core':
         specifier: workspace:*
         version: link:../../core
       firebase:
@@ -105,7 +105,7 @@ importers:
 
   packages/adapters/mongodb:
     dependencies:
-      '@uiaf/core':
+      '@uaif/core':
         specifier: workspace:*
         version: link:../../core
       mongodb:
@@ -118,7 +118,7 @@ importers:
 
   packages/adapters/next:
     dependencies:
-      '@uiaf/core':
+      '@uaif/core':
         specifier: workspace:*
         version: link:../../core
     devDependencies:
@@ -137,7 +137,7 @@ importers:
 
   packages/adapters/react:
     dependencies:
-      '@uiaf/core':
+      '@uaif/core':
         specifier: workspace:*
         version: link:../../core
     devDependencies:
@@ -153,7 +153,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@uiaf/core':
+      '@uaif/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:

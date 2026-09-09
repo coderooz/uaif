@@ -1,19 +1,26 @@
-import { CLIError } from '@uiaf/core';
-import type { CLIOptions } from '@uiaf/core';
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'fs';
+/**
+ * [File Info]
+ * Name: commands.ts
+ * Purpose: CLI command implementations for UAIF
+ * Module: CLI Commands
+ */
+
+import { CLIError } from '@uaif/core';
+import type { CLIOptions } from '@uaif/core';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 export async function initCommand(args: string[], options: CLIOptions): Promise<void> {
   const dir = options.directory || process.cwd();
-  const manifestPath = join(dir, 'uiaf-manifest.json');
+  const manifestPath = join(dir, 'uaif-manifest.json');
 
   if (existsSync(manifestPath) && !options.force) {
-    throw new CLIError('uiaf-manifest.json already exists. Use --force to overwrite.', 'MANIFEST_EXISTS');
+    throw new CLIError('uaif-manifest.json already exists. Use --force to overwrite.', 'MANIFEST_EXISTS');
   }
 
   const manifest = {
     version: 1,
-    uiafVersion: '0.1.0',
+    uaifVersion: '0.1.0',
     integrations: {},
     metadata: {
       createdAt: new Date().toISOString(),
@@ -28,7 +35,7 @@ export async function initCommand(args: string[], options: CLIOptions): Promise<
   }
 
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-  console.log('Initialized UIAF manifest at', manifestPath);
+  console.log('Initialized UAIF manifest at', manifestPath);
 }
 
 export async function detectCommand(args: string[], options: CLIOptions): Promise<void> {
@@ -56,21 +63,21 @@ export async function detectCommand(args: string[], options: CLIOptions): Promis
     console.log('Detected frameworks:', detected.join(', '));
   }
 
-  const manifestPath = join(dir, 'uiaf-manifest.json');
+  const manifestPath = join(dir, 'uaif-manifest.json');
   if (existsSync(manifestPath)) {
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
     console.log('Current integrations:', Object.keys(manifest.integrations || {}));
   } else {
-    console.log('No UIAF manifest found. Run "uai init" first.');
+    console.log('No UAIF manifest found. Run "uaif init" first.');
   }
 }
 
 export async function listCommand(args: string[], options: CLIOptions): Promise<void> {
   const dir = options.directory || process.cwd();
-  const manifestPath = join(dir, 'uiaf-manifest.json');
+  const manifestPath = join(dir, 'uaif-manifest.json');
 
   if (!existsSync(manifestPath)) {
-    console.log('No UIAF manifest found. Run "uai init" first.');
+    console.log('No UAIF manifest found. Run "uaif init" first.');
     return;
   }
 
@@ -91,10 +98,10 @@ export async function listCommand(args: string[], options: CLIOptions): Promise<
 
 export async function validateCommand(args: string[], options: CLIOptions): Promise<void> {
   const dir = options.directory || process.cwd();
-  const manifestPath = join(dir, 'uiaf-manifest.json');
+  const manifestPath = join(dir, 'uaif-manifest.json');
 
   if (!existsSync(manifestPath)) {
-    throw new CLIError('No uiaf-manifest.json found. Run "uai init" first.', 'NO_MANIFEST');
+    throw new CLIError('No uaif-manifest.json found. Run "uaif init" first.', 'NO_MANIFEST');
   }
 
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
@@ -107,8 +114,8 @@ export async function validateCommand(args: string[], options: CLIOptions): Prom
     errors.push('Manifest missing version field');
   }
 
-  if (!manifest.uiafVersion) {
-    warnings.push('Manifest missing uiafVersion field');
+  if (!manifest.uaifVersion) {
+    warnings.push('Manifest missing uaifVersion field');
   }
 
   if (errors.length > 0) {
@@ -132,7 +139,7 @@ export async function doctorCommand(args: string[], options: CLIOptions): Promis
   const checks = [
     {
       name: 'Manifest exists',
-      pass: existsSync(join(dir, 'uiaf-manifest.json')),
+      pass: existsSync(join(dir, 'uaif-manifest.json')),
     },
     {
       name: 'Node.js available',

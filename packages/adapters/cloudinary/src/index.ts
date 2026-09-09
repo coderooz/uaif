@@ -6,7 +6,7 @@ import type {
   FileMetadata,
   ContractMetadata,
   QueryOptions,
-} from '@uiaf/core';
+} from '@uaif/core';
 
 export interface CloudinaryAdapterConfig {
   cloudName: string;
@@ -22,7 +22,7 @@ export class CloudinaryStorageAdapter implements StorageContract {
     id: 'cloudinary',
     version: '0.1.0',
     segment: 'storage',
-    description: 'Cloudinary storage adapter for UIAF',
+    description: 'Cloudinary storage adapter for UAIF',
     contexts: ['client-component', 'server-component', 'route-handler'],
   };
 
@@ -44,7 +44,7 @@ export class CloudinaryStorageAdapter implements StorageContract {
     const { content, name, mimeType, folder } = input;
 
     const uploadOptions: Record<string, unknown> = {
-      folder: folder || this.config.folder || 'uiaf',
+      folder: folder || this.config.folder || 'uaif',
       resource_type: 'auto',
       public_id: name || undefined,
       format: mimeType.split('/')[1] || undefined,
@@ -126,7 +126,7 @@ export class CloudinaryStorageAdapter implements StorageContract {
   async list(folder?: string, options?: QueryOptions): Promise<FileMetadata[]> {
     const result = await cloudinary.api.resources({
       type: 'upload',
-      prefix: folder || this.config.folder || 'uiaf',
+      prefix: folder || this.config.folder || 'uaif',
       max_results: options?.limit || 100,
     });
 

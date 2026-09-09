@@ -1,12 +1,12 @@
 {
-  "name": "@uiaf/cli",
+  "name": "@uaif/cli",
   "version": "0.1.0",
-  "description": "UIAF CLI — Command-line interface for managing integrations",
+  "description": "UAIF CLI — Command-line interface for managing integrations",
   "author": "Coderooz <contact@coderooz.in>",
   "license": "MIT",
   "type": "module",
   "bin": {
-    "uai": "./dist/cli.js"
+    "uaif": "./dist/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,10 +26,10 @@
     "clean": "rm -rf dist",
     "test": "vitest run",
     "test:watch": "vitest",
-    "uai": "node dist/cli.js"
+    "uaif": "node dist/cli.js"
   },
   "dependencies": {
-    "@uiaf/core": "workspace:*"
+    "@uaif/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

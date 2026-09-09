@@ -1,12 +1,12 @@
 import type {
   AuthContract,
-  UIAFUser,
-  UIAFSession,
+  UAIFUser,
+  UAIFSession,
   LoginInput,
   RegisterInput,
   AuthResult,
   ContractMetadata,
-} from '@uiaf/core';
+} from '@uaif/core';
 
 export interface FirebaseAuthAdapterConfig {
   apiKey: string;
@@ -22,7 +22,7 @@ export class FirebaseAuthAdapter implements AuthContract {
     id: 'firebase',
     version: '0.1.0',
     segment: 'auth',
-    description: 'Firebase authentication adapter for UIAF',
+    description: 'Firebase authentication adapter for UAIF',
     contexts: ['client-component', 'server-component', 'route-handler'],
   };
 
@@ -54,7 +54,7 @@ export class FirebaseAuthAdapter implements AuthContract {
     const data = await response.json();
     this.currentToken = data.idToken;
 
-    const user: UIAFUser = {
+    const user: UAIFUser = {
       id: data.localId,
       email: data.email,
       displayName: data.displayName,
@@ -64,7 +64,7 @@ export class FirebaseAuthAdapter implements AuthContract {
       updatedAt: new Date(),
     };
 
-    const session: UIAFSession = {
+    const session: UAIFSession = {
       id: data.idToken,
       user,
       createdAt: new Date(),
@@ -103,7 +103,7 @@ export class FirebaseAuthAdapter implements AuthContract {
     const data = await response.json();
     this.currentToken = data.idToken;
 
-    const user: UIAFUser = {
+    const user: UAIFUser = {
       id: data.localId,
       email: data.email,
       displayName: data.displayName,
@@ -112,7 +112,7 @@ export class FirebaseAuthAdapter implements AuthContract {
       updatedAt: new Date(),
     };
 
-    const session: UIAFSession = {
+    const session: UAIFSession = {
       id: data.idToken,
       user,
       createdAt: new Date(),
@@ -131,7 +131,7 @@ export class FirebaseAuthAdapter implements AuthContract {
     this.currentToken = null;
   }
 
-  async getCurrentUser(): Promise<UIAFUser | null> {
+  async getCurrentUser(): Promise<UAIFUser | null> {
     if (!this.currentToken) return null;
 
     try {
@@ -170,7 +170,7 @@ export class FirebaseAuthAdapter implements AuthContract {
     return user !== null;
   }
 
-  async getSession(): Promise<UIAFSession | null> {
+  async getSession(): Promise<UAIFSession | null> {
     const user = await this.getCurrentUser();
     if (!user) return null;
 
@@ -183,7 +183,7 @@ export class FirebaseAuthAdapter implements AuthContract {
     };
   }
 
-  async updateUser(userId: string, data: Partial<UIAFUser>): Promise<UIAFUser> {
+  async updateUser(userId: string, data: Partial<UAIFUser>): Promise<UAIFUser> {
     if (!this.currentToken) {
       throw new Error('Not authenticated');
     }
@@ -232,7 +232,7 @@ export class FirebaseAuthAdapter implements AuthContract {
     this.currentToken = null;
   }
 
-  async verifyToken(token: string): Promise<UIAFUser | null> {
+  async verifyToken(token: string): Promise<UAIFUser | null> {
     try {
       const response = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${this.config.apiKey}`,

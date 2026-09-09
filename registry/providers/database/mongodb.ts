@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '@uiaf/core';
+import type { ProviderDefinition } from '@uaif/core';
 
 export const mongodbProvider: ProviderDefinition = {
   identity: {
@@ -71,7 +71,7 @@ export const mongodbProvider: ProviderDefinition = {
     'GridFS',
     'Atlas Search',
   ],
-  adapterPackage: '@uiaf/adapter-mongodb',
+  adapterPackage: '@uaif/mongodb',
   packages: {
     node: ['mongoose'],
     nextjs: ['mongoose'],

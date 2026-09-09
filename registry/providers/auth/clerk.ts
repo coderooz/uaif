@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '@uiaf/core';
+import type { ProviderDefinition } from '@uaif/core';
 
 export const clerkProvider: ProviderDefinition = {
   identity: {
@@ -68,7 +68,7 @@ export const clerkProvider: ProviderDefinition = {
     'Organization management',
     'Session tokens',
   ],
-  adapterPackage: '@uiaf/adapter-clerk',
+  adapterPackage: '@uaif/clerk',
   packages: {
     react: ['@clerk/clerk-react'],
     nextjs: ['@clerk/nextjs'],

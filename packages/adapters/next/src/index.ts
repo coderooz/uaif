@@ -1,14 +1,14 @@
 /**
- * UIAF Next.js Adapter
+ * UAIF Next.js Adapter
  *
- * Next.js-specific adapter for UIAF integrations.
+ * Next.js-specific adapter for UAIF integrations.
  * Provides Server Components, Client Components, Route Handlers,
  * Server Actions, and Middleware support.
  *
- * @module @uiaf/adapter-next
+ * @module @uaif/adapter-next
  */
 
-import type { AuthContract, DatabaseContract, StorageContract } from '@uiaf/core';
+import type { AuthContract, DatabaseContract, StorageContract } from '@uaif/core';
 
 /**
  * Next.js adapter configuration.
@@ -23,7 +23,7 @@ export interface NextAdapterConfig {
 }
 
 /**
- * Create a Next.js adapter for UIAF integrations.
+ * Create a Next.js adapter for UAIF integrations.
  */
 export function createNextAdapter(_config?: NextAdapterConfig) {
   return {

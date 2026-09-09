@@ -8,8 +8,8 @@
 
 ## Project Identity
 
-- **Name:** Universal Application Integration Framework (UIAF)
-- **Short Name:** UIAF
+- **Name:** Universal Application Integration Framework (UAIF)
+- **Short Name:** UAIF
 - **Repository:** `coderooz/uiaf`
 - **Visibility:** Private
 - **License:** MIT
@@ -17,7 +17,7 @@
 
 ## Project Purpose
 
-UIAF is a framework and tooling system for creating a stable application-facing integration layer between software applications and external services/providers while managing provider-specific implementations, framework/runtime differences, compatibility constraints, configuration, scaffolding, validation, migration, and lifecycle maintenance.
+UAIF is a framework and tooling system for creating a stable application-facing integration layer between software applications and external services/providers while managing provider-specific implementations, framework/runtime differences, compatibility constraints, configuration, scaffolding, validation, migration, and lifecycle maintenance.
 
 ## Current Status
 
@@ -32,7 +32,7 @@ UIAF is a framework and tooling system for creating a stable application-facing 
 ## Repository Structure
 
 ```
-uiaf/
+uaif/
 ├── packages/
 │   ├── core/              # Core contracts, types, registry, compatibility
 │   │   ├── src/
@@ -141,7 +141,7 @@ pnpm test             # Run tests
 pnpm lint             # Lint code
 pnpm typecheck        # Type check
 pnpm format           # Format code
-pnpm uai              # Run CLI
+pnpm uaif              # Run CLI
 ```
 
 ## Testing Strategy
@@ -236,5 +236,5 @@ pnpm uai              # Run CLI
 
 ---
 
-**This PRI is the authoritative operational reference for the UIAF project.**
+**This PRI is the authoritative operational reference for the UAIF project.**
 **Keep it synchronized with implementation.**

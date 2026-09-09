@@ -1,4 +1,4 @@
-import type { ProviderDefinition } from '@uiaf/core';
+import type { ProviderDefinition } from '@uaif/core';
 
 export const cloudinaryProvider: ProviderDefinition = {
   identity: {
@@ -67,7 +67,7 @@ export const cloudinaryProvider: ProviderDefinition = {
     'AI analysis',
     'CDN delivery',
   ],
-  adapterPackage: '@uiaf/adapter-cloudinary',
+  adapterPackage: '@uaif/cloudinary',
   packages: {
     react: ['cloudinary', '@cloudinary/react'],
     nextjs: ['cloudinary', '@cloudinary/react'],

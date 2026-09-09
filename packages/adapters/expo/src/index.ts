@@ -1,13 +1,13 @@
 /**
- * UIAF Expo Adapter
+ * UAIF Expo Adapter
  *
- * Expo-specific adapter for UIAF integrations.
+ * Expo-specific adapter for UAIF integrations.
  * Provides React Native and Expo-specific integration support.
  *
- * @module @uiaf/adapter-expo
+ * @module @uaif/adapter-expo
  */
 
-import type { AuthContract, DatabaseContract, StorageContract } from '@uiaf/core';
+import type { AuthContract, DatabaseContract, StorageContract } from '@uaif/core';
 
 /**
  * Expo adapter configuration.
@@ -22,7 +22,7 @@ export interface ExpoAdapterConfig {
 }
 
 /**
- * Create an Expo adapter for UIAF integrations.
+ * Create an Expo adapter for UAIF integrations.
  */
 export function createExpoAdapter(_config?: ExpoAdapterConfig) {
   return {

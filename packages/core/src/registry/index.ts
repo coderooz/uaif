@@ -1,10 +1,15 @@
 /**
- * UIAF Provider Registry
+ * [File Info]
+ * Name: registry.ts
+ * Purpose: Provider registry for UAIF
+ * Module: Core Registry
+ *
+ * UAIF Provider Registry
  *
  * Central registry for provider definitions, capabilities, and compatibility metadata.
  * Providers are registered per integration segment with target-specific compatibility data.
  *
- * @module @uiaf/core/registry
+ * @module @uaif/core/registry
  */
 
 import type {

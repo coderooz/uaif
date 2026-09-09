@@ -1,11 +1,16 @@
 /**
- * UIAF Core Types
+ * [File Info]
+ * Name: types.ts
+ * Purpose: Foundational type definitions for UAIF
+ * Module: Core Types
+ *
+ * UAIF Core Types
  *
  * Foundational type definitions for the Universal Application Integration Framework.
  * These types define the contract model, provider registry, compatibility system,
  * and project environment profiling.
  *
- * @module @uiaf/core/types
+ * @module @uaif/core/types
  */
 
 // ============================================================================
@@ -18,11 +23,11 @@ export type SemVer = string;
 /** Version range specification (e.g., "^18.0.0", ">=16.x") */
 export type VersionRange = string;
 
-/** Version domains managed independently by UIAF */
+/** Version domains managed independently by UAIF */
 export interface VersionModel {
-  /** UIAF contract version */
+  /** UAIF contract version */
   contractVersion: SemVer;
-  /** UIAF core version */
+  /** UAIF core version */
   coreVersion: SemVer;
   /** Framework adapter version */
   adapterVersion: SemVer;
@@ -310,8 +315,8 @@ export interface ProjectProfile {
 export interface IntegrationManifest {
   /** Manifest version */
   version: number;
-  /** UIAF version used */
-  uiafVersion: SemVer;
+  /** UAIF version used */
+  uaifVersion: SemVer;
   /** Integration definitions */
   integrations: Record<
     IntegrationSegment,
@@ -341,8 +346,8 @@ export interface IntegrationManifest {
 export interface ResolvedState {
   /** Resolution timestamp */
   resolvedAt: string;
-  /** UIAF version used for resolution */
-  uiafVersion: SemVer;
+  /** UAIF version used for resolution */
+  uaifVersion: SemVer;
   /** Resolved integrations */
   integrations: Record<
     IntegrationSegment,
@@ -416,8 +421,8 @@ export interface CLIOptions {
 // Error Types
 // ============================================================================
 
-/** UIAF error categories */
-export type UIAFErrorCategory =
+/** UAIF error categories */
+export type UAIFErrorCategory =
   | 'COMPATIBILITY'
   | 'CONFIGURATION'
   | 'PROVIDER'
@@ -432,10 +437,10 @@ export type UIAFErrorCategory =
   | 'NETWORK'
   | 'UNKNOWN';
 
-/** UIAF error definition */
-export interface UIAFError {
+/** UAIF error definition */
+export interface UAIFError {
   /** Error category */
-  category: UIAFErrorCategory;
+  category: UAIFErrorCategory;
   /** Error code */
   code: string;
   /** Human-readable message */
