@@ -102,6 +102,30 @@ export {
   getProviderCompatibilityStatus,
 } from './registry/index.js';
 
+// Registry — Built-in provider data
+export {
+  builtinProviders,
+  getBuiltinProvidersBySegment,
+  getBuiltinProviderById,
+  getBuiltinProvidersByTarget,
+  clerkProvider,
+  firebaseProvider,
+  mongodbProvider,
+  postgresqlProvider,
+  cloudinaryProvider,
+  s3Provider,
+} from './registry/providers/index.js';
+
+// Registry — Compatibility matrix (SSOT)
+export {
+  compatibilityMatrix,
+  getCompatibilityEntry,
+  getCompatibleProvidersForTarget,
+} from './registry/compatibility-data.js';
+export type {
+  CompatibilityMatrixEntry,
+} from './registry/compatibility-data.js';
+
 // Compatibility
 export {
   resolveCompatibility,

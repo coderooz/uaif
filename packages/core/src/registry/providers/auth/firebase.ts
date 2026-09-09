@@ -1,4 +1,11 @@
-import type { ProviderDefinition } from '@uaif/core';
+/**
+ * [File Info]
+ * Name: firebase.ts
+ * Purpose: Firebase Auth provider definition — auth provider for React/Next.js/Expo/Node
+ * Module: Core Registry — Provider Data
+ */
+
+import type { ProviderDefinition } from '../../../types/index.js';
 
 export const firebaseProvider: ProviderDefinition = {
   identity: {
@@ -72,7 +79,7 @@ export const firebaseProvider: ProviderDefinition = {
     'Anonymous auth',
     'Custom claims',
   ],
-  adapterPackage: '@uaif/firebase-auth',
+  adapterPackage: '@uaif/adapter-firebase-auth',
   packages: {
     react: ['firebase', 'react-firebase-hooks'],
     nextjs: ['firebase', 'firebase-admin'],

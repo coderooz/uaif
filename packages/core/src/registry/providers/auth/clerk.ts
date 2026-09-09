@@ -1,4 +1,11 @@
-import type { ProviderDefinition } from '@uaif/core';
+/**
+ * [File Info]
+ * Name: clerk.ts
+ * Purpose: Clerk provider definition — auth provider for React/Next.js/Expo
+ * Module: Core Registry — Provider Data
+ */
+
+import type { ProviderDefinition } from '../../../types/index.js';
 
 export const clerkProvider: ProviderDefinition = {
   identity: {
@@ -68,7 +75,7 @@ export const clerkProvider: ProviderDefinition = {
     'Organization management',
     'Session tokens',
   ],
-  adapterPackage: '@uaif/clerk',
+  adapterPackage: '@uaif/adapter-clerk',
   packages: {
     react: ['@clerk/clerk-react'],
     nextjs: ['@clerk/nextjs'],

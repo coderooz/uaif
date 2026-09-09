@@ -1,4 +1,11 @@
-import type { ProviderDefinition } from '@uaif/core';
+/**
+ * [File Info]
+ * Name: cloudinary.ts
+ * Purpose: Cloudinary provider definition — image/video storage and transformation
+ * Module: Core Registry — Provider Data
+ */
+
+import type { ProviderDefinition } from '../../../types/index.js';
 
 export const cloudinaryProvider: ProviderDefinition = {
   identity: {
@@ -67,7 +74,7 @@ export const cloudinaryProvider: ProviderDefinition = {
     'AI analysis',
     'CDN delivery',
   ],
-  adapterPackage: '@uaif/cloudinary',
+  adapterPackage: '@uaif/adapter-cloudinary',
   packages: {
     react: ['cloudinary', '@cloudinary/react'],
     nextjs: ['cloudinary', '@cloudinary/react'],

@@ -5,8 +5,8 @@
  * Module: Core Resolver
  */
 
-import type { CompatibilityResult, CompatibilityStatus, ProviderDefinition, ProjectProfile, IntegrationSegment } from '../types/index.js';
-import { resolveCompatibility, resolveSegmentCompatibility, findBestProvider as findBestProviderCompat } from '../compatibility/index.js';
+import type { CompatibilityResult, CompatibilityStatus, ProjectProfile, IntegrationSegment } from '../types/index.js';
+import { resolveCompatibility, findBestProvider as findBestProviderCompat } from '../compatibility/index.js';
 
 export interface ResolverOptions {
   profile: ProjectProfile;

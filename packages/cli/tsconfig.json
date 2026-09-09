@@ -1,9 +1,16 @@
+/**
+ * [File Info]
+ * Name: tsconfig.json
+ * Purpose: TypeScript configuration for @uaif/cli package
+ * Module: CLI Package Configuration
+ */
+
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src"
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test"]
+  "exclude": ["node_modules", "dist"]
 }

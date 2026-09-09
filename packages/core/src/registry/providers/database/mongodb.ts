@@ -1,4 +1,11 @@
-import type { ProviderDefinition } from '@uaif/core';
+/**
+ * [File Info]
+ * Name: mongodb.ts
+ * Purpose: MongoDB provider definition — document database for Node/Next.js
+ * Module: Core Registry — Provider Data
+ */
+
+import type { ProviderDefinition } from '../../../types/index.js';
 
 export const mongodbProvider: ProviderDefinition = {
   identity: {
@@ -71,7 +78,7 @@ export const mongodbProvider: ProviderDefinition = {
     'GridFS',
     'Atlas Search',
   ],
-  adapterPackage: '@uaif/mongodb',
+  adapterPackage: '@uaif/adapter-mongodb',
   packages: {
     node: ['mongoose'],
     nextjs: ['mongoose'],

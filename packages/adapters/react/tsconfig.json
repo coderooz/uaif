@@ -1,5 +1,12 @@
+/**
+ * [File Info]
+ * Name: tsconfig.json
+ * Purpose: TypeScript configuration for @uaif/adapter-react package
+ * Module: React Adapter Configuration
+ */
+
 {
-  "extends": "../../../tsconfig.json",
+  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",

@@ -1,4 +1,11 @@
-import type { ProviderDefinition } from '@uaif/core';
+/**
+ * [File Info]
+ * Name: postgresql.ts
+ * Purpose: PostgreSQL provider definition — relational database with Prisma ORM
+ * Module: Core Registry — Provider Data
+ */
+
+import type { ProviderDefinition } from '../../../types/index.js';
 
 export const postgresqlProvider: ProviderDefinition = {
   identity: {
@@ -68,7 +75,7 @@ export const postgresqlProvider: ProviderDefinition = {
     'Seeding',
     'Prisma Studio',
   ],
-  adapterPackage: '@uaif/postgresql',
+  adapterPackage: '@uaif/adapter-postgresql',
   packages: {
     node: ['prisma', '@prisma/client'],
     nextjs: ['prisma', '@prisma/client'],

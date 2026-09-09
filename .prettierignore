@@ -1,8 +1,11 @@
-node_modules
-dist
-build
-coverage
-.workspace
-*.log
-.env
-.env.local
+# [File Info]
+# Name: .prettierignore
+# Purpose: Files and directories to exclude from Prettier formatting
+# Module: Tooling Configuration
+
+dist/
+node_modules/
+coverage/
+.workspace/
+pnpm-lock.yaml
+*.tsbuildinfo

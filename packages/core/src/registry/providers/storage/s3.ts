@@ -1,4 +1,11 @@
-import type { ProviderDefinition } from '@uaif/core';
+/**
+ * [File Info]
+ * Name: s3.ts
+ * Purpose: AWS S3 provider definition — object storage with AWS SDK
+ * Module: Core Registry — Provider Data
+ */
+
+import type { ProviderDefinition } from '../../../types/index.js';
 
 export const s3Provider: ProviderDefinition = {
   identity: {
@@ -62,7 +69,7 @@ export const s3Provider: ProviderDefinition = {
     'Bucket policies',
     'S3 Transfer Acceleration',
   ],
-  adapterPackage: '@uaif/s3',
+  adapterPackage: '@uaif/adapter-s3',
   packages: {
     node: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
     nextjs: ['@aws-sdk/client-s3', '@aws-sdk/s3-request-presigner'],
