@@ -36,5 +36,9 @@
     "type": "git",
     "url": "https://github.com/coderooz/uiaf.git",
     "directory": "packages/adapters/firebase-auth"
+  },
+  "homepage": "https://github.com/coderooz/uiaf#readme",
+  "bugs": {
+    "url": "https://github.com/coderooz/uiaf/issues"
   }
 }

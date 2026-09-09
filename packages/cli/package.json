@@ -4,6 +4,15 @@
   "description": "UAIF CLI — Command-line interface for managing integrations",
   "author": "Coderooz <contact@coderooz.in>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coderooz/uiaf.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/coderooz/uiaf#readme",
+  "bugs": {
+    "url": "https://github.com/coderooz/uiaf/issues"
+  },
   "type": "module",
   "bin": {
     "uaif": "./dist/cli.js"

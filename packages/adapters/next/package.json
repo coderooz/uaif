@@ -4,6 +4,15 @@
   "description": "UAIF Next.js Adapter — Next.js-specific integration adapter",
   "author": "Coderooz <contact@coderooz.in>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coderooz/uiaf.git",
+    "directory": "packages/adapters/next"
+  },
+  "homepage": "https://github.com/coderooz/uiaf#readme",
+  "bugs": {
+    "url": "https://github.com/coderooz/uiaf/issues"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
