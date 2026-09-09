@@ -3,170 +3,64 @@
 /**
  * [File Info]
  * Name: cli.ts
- * Purpose: UAIF CLI entry point
+ * Purpose: UAIF CLI entry point — Commander.js based
  * Module: CLI
  *
  * UAIF CLI Entry Point
  *
  * Command-line interface for the Universal Application Integration Framework.
+ * Uses Commander.js for argument parsing and command routing.
  *
  * @module @uaif/cli
  */
 
+import { Command } from 'commander';
 import { CLIError } from '@uaif/core';
-import type { CLICommand, CLIOptions } from '@uaif/core';
-
-// ============================================================================
-// CLI Configuration
-// ============================================================================
+import { registerDetectCommand } from './commands/detect.js';
+import { registerListCommand } from './commands/list.js';
+import { registerValidateCommand } from './commands/validate.js';
 
 const VERSION = '0.1.0';
 
-const HELP_TEXT = `
-uaif — Universal Application Integration Framework CLI
+export const program = new Command()
+  .name('uaif')
+  .description('Universal Application Integration Framework CLI')
+  .version(VERSION)
+  .option('-d, --directory <path>', 'Target directory (default: current directory)')
+  .option('--dry-run', 'Preview changes without applying them')
+  .option('--verbose', 'Enable verbose output')
+  .option('--force', 'Force operation (skip confirmations)');
 
-Usage:
-  uaif <command> [options]
+// Register commands
+registerDetectCommand(program);
+registerListCommand(program);
+registerValidateCommand(program);
 
-Commands:
-  init                  Initialize UAIF in the current project
-  detect                Detect project environment and capabilities
-  plan                  Plan integration changes before applying
-  add <segment> <provider>  Add a provider integration
-  remove <segment> <provider>  Remove a provider integration
-  switch <segment> <provider>  Switch to a different provider
-  list                  List current integrations
-  validate              Validate current integration state
-  doctor                Diagnose integration health
-  sync                  Synchronize desired state with actual state
-  migrate               Run migration for provider changes
-  diff                  Show differences between desired and actual state
-
-Options:
-  --dry-run             Preview changes without applying them
-  --verbose             Enable verbose output
-  --force               Force operation (skip confirmations)
-  --directory <path>    Target directory (default: current directory)
-  --version             Show version
-  --help                Show this help message
-
-Examples:
-  uaif init
-  uaif detect
-  uaif add auth clerk
-  uaif switch auth clerk firebase
-  uaif remove auth clerk
-  uaif list
-  uaif validate
-  uaif doctor
-  uaif plan auth clerk --dry-run
-`;
-
-// ============================================================================
-// Argument Parsing
-// ============================================================================
-
-interface ParsedArgs {
-  command: CLICommand | null;
-  args: string[];
-  options: CLIOptions;
-  showHelp: boolean;
-  showVersion: boolean;
-}
-
-function parseArgs(argv: string[]): ParsedArgs {
-  const args = argv.slice(2);
-  const parsed: ParsedArgs = {
-    command: null,
-    args: [],
-    options: {},
-    showHelp: false,
-    showVersion: false,
-  };
-
-  let i = 0;
-  while (i < args.length) {
-    const arg = args[i];
-
-    if (arg === '--help' || arg === '-h') {
-      parsed.showHelp = true;
-    } else if (arg === '--version' || arg === '-v') {
-      parsed.showVersion = true;
-    } else if (arg === '--dry-run') {
-      parsed.options.dryRun = true;
-    } else if (arg === '--verbose') {
-      parsed.options.verbose = true;
-    } else if (arg === '--force') {
-      parsed.options.force = true;
-    } else if (arg === '--directory' || arg === '-d') {
-      i++;
-      parsed.options.directory = args[i];
-    } else if (!parsed.command) {
-      parsed.command = arg as CLICommand;
-    } else {
-      parsed.args.push(arg);
+// Global error handler
+function handleError(error: unknown): never {
+  if (error instanceof CLIError) {
+    console.error(`Error: ${error.message}`);
+    if (error.diagnostics) {
+      console.error('Details:', error.diagnostics);
     }
-
-    i++;
-  }
-
-  return parsed;
-}
-
-// ============================================================================
-// Command Execution
-// ============================================================================
-
-async function executeCommand(
-  command: CLICommand,
-  args: string[],
-  options: CLIOptions,
-): Promise<void> {
-  // Command implementations will be loaded dynamically
-  // For now, provide a stub that indicates the command is recognized
-  console.log(`Executing command: ${command}`);
-  console.log(`Arguments: ${args.join(', ') || 'none'}`);
-  console.log(`Options:`, options);
-
-  // TODO: Load and execute actual command implementations
-  // Each command will be in src/commands/<command>.ts
-}
-
-// ============================================================================
-// Main Entry
-// ============================================================================
-
-async function main(): Promise<void> {
-  const parsed = parseArgs(process.argv);
-
-  if (parsed.showVersion) {
-    console.log(`uaif v${VERSION}`);
-    process.exit(0);
-  }
-
-  if (parsed.showHelp) {
-    console.log(HELP_TEXT);
-    process.exit(0);
-  }
-
-  if (!parsed.command) {
-    console.log(HELP_TEXT);
-    process.exit(0);
-  }
-
-  try {
-    await executeCommand(parsed.command, parsed.args, parsed.options);
-  } catch (error) {
-    if (error instanceof CLIError) {
-      console.error(`Error: ${error.message}`);
-      if (error.diagnostics) {
-        console.error('Details:', error.diagnostics);
-      }
-      process.exit(1);
-    }
-    console.error('Unexpected error:', error);
     process.exit(1);
   }
+  console.error('Unexpected error:', error);
+  process.exit(1);
 }
 
-main();
+// Only parse when run as CLI entry point (not imported for testing)
+const isMainModule =
+  process.argv[1] &&
+  (process.argv[1].endsWith('/cli.js') ||
+   process.argv[1].endsWith('\\cli.js') ||
+   process.argv[1].endsWith('/cli.ts') ||
+   process.argv[1].endsWith('\\cli.ts'));
+
+if (isMainModule) {
+  try {
+    program.parse(process.argv);
+  } catch (error) {
+    handleError(error);
+  }
+}

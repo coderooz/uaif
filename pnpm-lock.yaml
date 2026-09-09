@@ -52,8 +52,11 @@ importers:
         version: 19.2.8(react@19.2.8)
     devDependencies:
       typescript:
-        specifier: 5.9.3
+        specifier: ^5.7.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@22.20.1)(lightningcss@1.33.0)(terser@5.51.2)
 
   packages/adapters/cloudinary:
     dependencies:
@@ -65,8 +68,11 @@ importers:
         version: 2.11.0
     devDependencies:
       typescript:
-        specifier: 5.9.3
+        specifier: ^5.7.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@22.20.1)(lightningcss@1.33.0)(terser@5.51.2)
 
   packages/adapters/expo:
     dependencies:
@@ -89,6 +95,9 @@ importers:
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@22.20.1)(lightningcss@1.33.0)(terser@5.51.2)
 
   packages/adapters/firebase-auth:
     dependencies:
@@ -106,8 +115,11 @@ importers:
         version: 19.2.8(react@19.2.8)
     devDependencies:
       typescript:
-        specifier: 5.9.3
+        specifier: ^5.7.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@22.20.1)(lightningcss@1.33.0)(terser@5.51.2)
 
   packages/adapters/mongodb:
     dependencies:
@@ -119,8 +131,11 @@ importers:
         version: 6.21.0
     devDependencies:
       typescript:
-        specifier: 5.9.3
+        specifier: ^5.7.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@22.20.1)(lightningcss@1.33.0)(terser@5.51.2)
 
   packages/adapters/next:
     dependencies:
@@ -140,6 +155,9 @@ importers:
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@22.20.1)(lightningcss@1.33.0)(terser@5.51.2)
 
   packages/adapters/react:
     dependencies:
@@ -156,12 +174,18 @@ importers:
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@22.20.1)(lightningcss@1.33.0)(terser@5.51.2)
 
   packages/cli:
     dependencies:
       '@uaif/core':
         specifier: workspace:*
         version: link:../core
+      commander:
+        specifier: ^15.0.0
+        version: 15.0.0
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
@@ -2537,6 +2561,10 @@ packages:
   commander@12.1.0:
     resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
     engines: {node: '>=18'}
+
+  commander@15.0.0:
+    resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
+    engines: {node: '>=22.12.0'}
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -7583,6 +7611,8 @@ snapshots:
   color-name@1.1.4: {}
 
   commander@12.1.0: {}
+
+  commander@15.0.0: {}
 
   commander@2.20.3: {}
 

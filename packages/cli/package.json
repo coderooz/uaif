@@ -38,7 +38,8 @@
     "uaif": "node dist/cli.js"
   },
   "dependencies": {
-    "@uaif/core": "workspace:*"
+    "@uaif/core": "workspace:*",
+    "commander": "^15.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
