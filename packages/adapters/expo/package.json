@@ -1,0 +1,43 @@
+{
+  "name": "@uiaf/adapter-expo",
+  "version": "0.1.0",
+  "description": "UIAF Expo Adapter — Expo-specific integration adapter",
+  "author": "Coderooz <contact@coderooz.in>",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@uiaf/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": ">=50.0.0",
+    "react": ">=18.0.0",
+    "react-native": ">=0.73.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "expo": "^54.0.0",
+    "react": "^19.0.0",
+    "react-native": "^0.76.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

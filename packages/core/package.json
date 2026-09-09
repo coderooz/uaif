@@ -1,0 +1,43 @@
+{
+  "name": "@uiaf/core",
+  "version": "0.1.0",
+  "description": "UIAF Core — Contracts, types, registry, compatibility engine, and resolver",
+  "author": "Coderooz <contact@coderooz.in>",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./contracts/*": {
+      "types": "./dist/contracts/*/index.d.ts",
+      "import": "./dist/contracts/*/index.js",
+      "require": "./dist/contracts/*/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
