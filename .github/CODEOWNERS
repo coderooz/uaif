@@ -1,0 +1,14 @@
+# Default owner for everything in the repo
+* @coderooz
+
+# Core package
+packages/core/ @coderooz
+
+# CLI package
+packages/cli/ @coderooz
+
+# Adapters
+packages/adapters/ @coderooz
+
+# Registry
+registry/ @coderooz
