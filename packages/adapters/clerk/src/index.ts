@@ -38,6 +38,10 @@ export class ClerkAuthAdapter implements AuthContract {
   async login(input: LoginInput): Promise<AuthResult> {
     const { email, password } = input;
 
+    if (!this.config.secretKey) {
+      return { success: false, error: 'Secret key required for login. Use server-side context.' };
+    }
+
     const response = await fetch('https://api.clerk.com/v1/client/sessions', {
       method: 'POST',
       headers: {
@@ -55,19 +59,19 @@ export class ClerkAuthAdapter implements AuthContract {
       return { success: false, error: 'Login failed' };
     }
 
-    const data = await response.json();
-    this.currentToken = data.token;
+    const data = (await response.json()) as Record<string, unknown>;
+    this.currentToken = data.token as string;
 
-    const user = await this.getUser(data.user_id);
+    const user = await this.getUser(data.user_id as string);
     if (!user) {
       return { success: false, error: 'Failed to fetch user' };
     }
 
     const session: UAIFSession = {
-      id: data.id,
+      id: data.id as string,
       user,
       createdAt: new Date(),
-      expiresAt: new Date(data.expire_at),
+      expiresAt: new Date(data.expire_at as number),
       active: true,
     };
 
@@ -80,6 +84,10 @@ export class ClerkAuthAdapter implements AuthContract {
 
   async register(input: RegisterInput): Promise<AuthResult> {
     const { email, password, displayName } = input;
+
+    if (!this.config.secretKey) {
+      return { success: false, error: 'Secret key required for registration. Use server-side context.' };
+    }
 
     const response = await fetch('https://api.clerk.com/v1/users', {
       method: 'POST',
@@ -99,7 +107,7 @@ export class ClerkAuthAdapter implements AuthContract {
       return { success: false, error: 'Registration failed' };
     }
 
-    const clerkUser = await response.json();
+    const clerkUser = (await response.json()) as Record<string, unknown>;
     const user = this.mapUser(clerkUser);
 
     return {
@@ -109,6 +117,9 @@ export class ClerkAuthAdapter implements AuthContract {
   }
 
   async logout(): Promise<void> {
+    if (!this.config.secretKey) {
+      throw new Error('Secret key required for logout. Use server-side context.');
+    }
     if (this.currentToken) {
       await fetch('https://api.clerk.com/v1/client/sessions/current', {
         method: 'DELETE',
@@ -132,11 +143,12 @@ export class ClerkAuthAdapter implements AuthContract {
 
       if (!response.ok) return null;
 
-      const client = await response.json();
-      const session = client.sessions?.[0];
+      const client = (await response.json()) as Record<string, unknown>;
+      const sessions = client.sessions as Array<Record<string, unknown>> | undefined;
+      const session = sessions?.[0];
       if (!session) return null;
 
-      return this.getUser(session.user_id);
+      return this.getUser(session.user_id as string);
     } catch {
       return null;
     }
@@ -159,18 +171,19 @@ export class ClerkAuthAdapter implements AuthContract {
 
       if (!response.ok) return null;
 
-      const client = await response.json();
-      const session = client.sessions?.[0];
+      const client = (await response.json()) as Record<string, unknown>;
+      const sessions = client.sessions as Array<Record<string, unknown>> | undefined;
+      const session = sessions?.[0];
       if (!session) return null;
 
-      const user = await this.getUser(session.user_id);
+      const user = await this.getUser(session.user_id as string);
       if (!user) return null;
 
       return {
-        id: session.id,
+        id: session.id as string,
         user,
-        createdAt: new Date(session.created_at),
-        expiresAt: new Date(session.expire_at),
+        createdAt: new Date(session.created_at as number),
+        expiresAt: new Date(session.expire_at as number),
         active: true,
       };
     } catch {
@@ -179,6 +192,7 @@ export class ClerkAuthAdapter implements AuthContract {
   }
 
   async getUser(userId: string): Promise<UAIFUser | null> {
+    if (!this.config.secretKey) return null;
     try {
       const response = await fetch(`https://api.clerk.com/v1/users/${userId}`, {
         headers: {
@@ -188,7 +202,7 @@ export class ClerkAuthAdapter implements AuthContract {
 
       if (!response.ok) return null;
 
-      const user = await response.json();
+      const user = (await response.json()) as Record<string, unknown>;
       return this.mapUser(user);
     } catch {
       return null;
@@ -196,6 +210,9 @@ export class ClerkAuthAdapter implements AuthContract {
   }
 
   async updateUser(userId: string, data: Partial<UAIFUser>): Promise<UAIFUser> {
+    if (!this.config.secretKey) {
+      throw new Error('Secret key required for user update. Use server-side context.');
+    }
     const response = await fetch(`https://api.clerk.com/v1/users/${userId}`, {
       method: 'PATCH',
       headers: {
@@ -212,11 +229,14 @@ export class ClerkAuthAdapter implements AuthContract {
       throw new Error('Failed to update user');
     }
 
-    const user = await response.json();
+    const user = (await response.json()) as Record<string, unknown>;
     return this.mapUser(user);
   }
 
   async deleteUser(userId: string): Promise<void> {
+    if (!this.config.secretKey) {
+      throw new Error('Secret key required for user deletion. Use server-side context.');
+    }
     await fetch(`https://api.clerk.com/v1/users/${userId}`, {
       method: 'DELETE',
       headers: {
@@ -235,11 +255,12 @@ export class ClerkAuthAdapter implements AuthContract {
 
       if (!response.ok) return null;
 
-      const client = await response.json();
-      const session = client.sessions?.[0];
+      const client = (await response.json()) as Record<string, unknown>;
+      const sessions = client.sessions as Array<Record<string, unknown>> | undefined;
+      const session = sessions?.[0];
       if (!session) return null;
 
-      return this.getUser(session.user_id);
+      return this.getUser(session.user_id as string);
     } catch {
       return null;
     }

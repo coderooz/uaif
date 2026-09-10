@@ -51,21 +51,21 @@ export class FirebaseAuthAdapter implements AuthContract {
       return { success: false, error: 'Login failed' };
     }
 
-    const data = await response.json();
-    this.currentToken = data.idToken;
+    const data = (await response.json()) as Record<string, unknown>;
+    this.currentToken = data.idToken as string;
 
     const user: UAIFUser = {
-      id: data.localId,
-      email: data.email,
-      displayName: data.displayName,
-      imageUrl: data.photoUrl,
+      id: data.localId as string,
+      email: data.email as string,
+      displayName: data.displayName as string,
+      imageUrl: data.photoUrl as string,
       verified: true,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     const session: UAIFSession = {
-      id: data.idToken,
+      id: data.idToken as string,
       user,
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + Number(data.expiresIn) * 1000),
@@ -100,20 +100,20 @@ export class FirebaseAuthAdapter implements AuthContract {
       return { success: false, error: 'Registration failed' };
     }
 
-    const data = await response.json();
-    this.currentToken = data.idToken;
+    const data = (await response.json()) as Record<string, unknown>;
+    this.currentToken = data.idToken as string;
 
     const user: UAIFUser = {
-      id: data.localId,
-      email: data.email,
-      displayName: data.displayName,
+      id: data.localId as string,
+      email: data.email as string,
+      displayName: data.displayName as string,
       verified: true,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     const session: UAIFSession = {
-      id: data.idToken,
+      id: data.idToken as string,
       user,
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + Number(data.expiresIn) * 1000),
@@ -146,17 +146,18 @@ export class FirebaseAuthAdapter implements AuthContract {
 
       if (!response.ok) return null;
 
-      const data = await response.json();
-      const userData = data.users?.[0];
+      const data = (await response.json()) as Record<string, unknown>;
+      const users = data.users as Array<Record<string, unknown>> | undefined;
+      const userData = users?.[0];
       if (!userData) return null;
 
       return {
-        id: userData.localId,
-        email: userData.email,
-        displayName: userData.displayName,
-        imageUrl: userData.photoUrl,
+        id: userData.localId as string,
+        email: userData.email as string,
+        displayName: userData.displayName as string,
+        imageUrl: userData.photoUrl as string,
         verified: true,
-        metadata: userData.customAttributes ? JSON.parse(userData.customAttributes) : undefined,
+        metadata: userData.customAttributes ? JSON.parse(userData.customAttributes as string) : undefined,
         createdAt: new Date(Number(userData.createdAt) * 1000),
         updatedAt: new Date(Number(userData.lastLoginAt) * 1000),
       };
@@ -245,15 +246,16 @@ export class FirebaseAuthAdapter implements AuthContract {
 
       if (!response.ok) return null;
 
-      const data = await response.json();
-      const userData = data.users?.[0];
+      const data = (await response.json()) as Record<string, unknown>;
+      const users = data.users as Array<Record<string, unknown>> | undefined;
+      const userData = users?.[0];
       if (!userData) return null;
 
       return {
-        id: userData.localId,
-        email: userData.email,
-        displayName: userData.displayName,
-        imageUrl: userData.photoUrl,
+        id: userData.localId as string,
+        email: userData.email as string,
+        displayName: userData.displayName as string,
+        imageUrl: userData.photoUrl as string,
         verified: true,
         createdAt: new Date(Number(userData.createdAt) * 1000),
         updatedAt: new Date(Number(userData.lastLoginAt) * 1000),

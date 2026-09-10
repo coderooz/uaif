@@ -1,4 +1,4 @@
-import { MongoClient, type Db, type Collection, type Document } from 'mongodb';
+import { MongoClient, ObjectId, type Db, type Collection, type Document } from 'mongodb';
 import type {
   DatabaseContract,
   QueryFilter,
@@ -96,7 +96,8 @@ export class MongoDBAdapter<TDocument extends DBDocument = DBDocument> implement
 
   async findById(id: string): Promise<TDocument | null> {
     const coll = this.getCollection();
-    const result = await coll.findOne({ _id: id } as Document);
+    const objectId = ObjectId.isValid(id) ? new ObjectId(id) : id;
+    const result = await coll.findOne({ _id: objectId } as Document);
     return result as TDocument | null;
   }
 
@@ -122,8 +123,9 @@ export class MongoDBAdapter<TDocument extends DBDocument = DBDocument> implement
 
   async update(id: string, data: Partial<TDocument>): Promise<TDocument> {
     const coll = this.getCollection();
+    const objectId = ObjectId.isValid(id) ? new ObjectId(id) : id;
     const result = await coll.findOneAndUpdate(
-      { _id: id } as Document,
+      { _id: objectId } as Document,
       { $set: { ...data, updatedAt: new Date() } as Document },
       { returnDocument: 'after' }
     );
@@ -137,7 +139,8 @@ export class MongoDBAdapter<TDocument extends DBDocument = DBDocument> implement
 
   async delete(id: string): Promise<boolean> {
     const coll = this.getCollection();
-    const result = await coll.deleteOne({ _id: id } as Document);
+    const objectId = ObjectId.isValid(id) ? new ObjectId(id) : id;
+    const result = await coll.deleteOne({ _id: objectId } as Document);
     return result.deletedCount > 0;
   }
 

@@ -23,7 +23,7 @@ export class CloudinaryStorageAdapter implements StorageContract {
     version: '0.1.0',
     segment: 'storage',
     description: 'Cloudinary storage adapter for UAIF',
-    contexts: ['client-component', 'server-component', 'route-handler'],
+    contexts: ['server-component', 'route-handler'],
   };
 
   readonly portable = true;
@@ -60,10 +60,15 @@ export class CloudinaryStorageAdapter implements StorageContract {
 
     let result: UploadApiResponse;
 
-    if (typeof content === 'string') {
-      result = await this.uploadUrl(content, uploadOptions);
+    if (content instanceof Buffer) {
+      const dataUri = `data:${mimeType};base64,${content.toString('base64')}`;
+      result = await cloudinary.uploader.upload(dataUri, uploadOptions as Record<string, unknown>);
+    } else if (typeof Blob !== 'undefined' && content instanceof Blob) {
+      const buffer = Buffer.from(await content.arrayBuffer());
+      const dataUri = `data:${mimeType};base64,${buffer.toString('base64')}`;
+      result = await cloudinary.uploader.upload(dataUri, uploadOptions as Record<string, unknown>);
     } else {
-      throw new Error('Unsupported file content type. Only URL strings are supported.');
+      throw new Error('Unsupported content type. Use Buffer or Blob.');
     }
 
     return {
@@ -147,9 +152,6 @@ export class CloudinaryStorageAdapter implements StorageContract {
     }));
   }
 
-  private async uploadUrl(url: string, options: Record<string, unknown>): Promise<UploadApiResponse> {
-    return cloudinary.uploader.upload(url, options as Record<string, unknown>);
-  }
 }
 
 export function createCloudinaryAdapter(config: CloudinaryAdapterConfig): CloudinaryStorageAdapter {
