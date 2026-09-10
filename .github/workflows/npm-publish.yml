@@ -35,22 +35,22 @@ jobs:
       - run: pnpm build
       - run: pnpm test
       - name: Publish @uaif/core
-        run: pnpm --filter @uaif/core publish --access public
+        run: pnpm --filter @uaif/core publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish @uaif/cli
-        run: pnpm --filter @uaif/cli publish --access public
+        run: pnpm --filter @uaif/cli publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish adapters
         run: |
-          pnpm --filter @uaif/adapter-react publish --access public
-          pnpm --filter @uaif/adapter-next publish --access public
-          pnpm --filter @uaif/adapter-expo publish --access public
-          pnpm --filter @uaif/adapter-clerk publish --access public
-          pnpm --filter @uaif/adapter-firebase-auth publish --access public
-          pnpm --filter @uaif/adapter-mongodb publish --access public
-          pnpm --filter @uaif/adapter-cloudinary publish --access public
+          pnpm --filter @uaif/adapter-react publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-next publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-expo publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-clerk publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-firebase-auth publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-mongodb publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-cloudinary publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Post-publish verification
