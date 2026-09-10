@@ -15,7 +15,10 @@ export class ManifestManager {
     this.manifest = existingManifest || {
       version: 1,
       uaifVersion: '0.1.0',
-      integrations: {} as Record<IntegrationSegment, { provider: string; config?: Record<string, unknown> }>,
+      integrations: {} as Record<
+        IntegrationSegment,
+        { provider: string; config?: Record<string, unknown> }
+      >,
       metadata: {
         createdAt: new Date().toISOString(),
         modifiedAt: new Date().toISOString(),
@@ -27,7 +30,9 @@ export class ManifestManager {
     return { ...this.manifest };
   }
 
-  getIntegration(segment: IntegrationSegment): { provider: string; config?: Record<string, unknown> } | undefined {
+  getIntegration(
+    segment: IntegrationSegment,
+  ): { provider: string; config?: Record<string, unknown> } | undefined {
     return this.manifest.integrations[segment];
   }
 
@@ -39,7 +44,7 @@ export class ManifestManager {
     segment: IntegrationSegment,
     provider: string,
     config?: Record<string, unknown>,
-    capabilities?: string[]
+    capabilities?: string[],
   ): void {
     this.manifest.integrations[segment] = {
       provider,
@@ -56,7 +61,7 @@ export class ManifestManager {
 
   updateIntegration(
     segment: IntegrationSegment,
-    updates: { provider?: string; config?: Record<string, unknown>; capabilities?: string[] }
+    updates: { provider?: string; config?: Record<string, unknown>; capabilities?: string[] },
   ): void {
     const existing = this.manifest.integrations[segment];
     if (!existing) {
@@ -121,7 +126,10 @@ export function createEmptyManifest(uaifVersion: SemVer): IntegrationManifest {
   return {
     version: 1,
     uaifVersion,
-    integrations: {} as Record<IntegrationSegment, { provider: string; config?: Record<string, unknown> }>,
+    integrations: {} as Record<
+      IntegrationSegment,
+      { provider: string; config?: Record<string, unknown> }
+    >,
     metadata: {
       createdAt: new Date().toISOString(),
       modifiedAt: new Date().toISOString(),

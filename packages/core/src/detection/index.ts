@@ -16,7 +16,12 @@ export interface DetectionOptions {
 
 export function detectProjectProfile(options: DetectionOptions): ProjectProfile {
   const pkg = options.packageJson as Record<string, unknown> | undefined;
-  const deps = pkg ? { ...(pkg.dependencies as Record<string, string>), ...(pkg.devDependencies as Record<string, string>) } : {};
+  const deps = pkg
+    ? {
+        ...(pkg.dependencies as Record<string, string>),
+        ...(pkg.devDependencies as Record<string, string>),
+      }
+    : {};
 
   const projectType = detectProjectType(deps);
   const runtime = detectRuntime(deps, projectType);
@@ -47,7 +52,10 @@ function detectProjectType(deps: Record<string, string>): ProjectType {
   return 'node';
 }
 
-function detectRuntime(deps: Record<string, string>, projectType: ProjectType): ProjectProfile['runtime'] {
+function detectRuntime(
+  deps: Record<string, string>,
+  projectType: ProjectType,
+): ProjectProfile['runtime'] {
   let name: RuntimeName = 'node';
   const targets: Platform[] = ['web'];
 
@@ -68,7 +76,7 @@ function detectRuntime(deps: Record<string, string>, projectType: ProjectType): 
   };
 }
 
-function detectLanguage(directory: string): ProjectProfile['language'] {
+function detectLanguage(_directory: string): ProjectProfile['language'] {
   return {
     name: 'typescript',
     version: '5.0.0',
@@ -95,8 +103,15 @@ function detectPackageManager(lockFiles: string[]): ProjectProfile['packageManag
   return { name: 'npm', version: '10.0.0' };
 }
 
-function detectPlatform(deps: Record<string, string>, projectType: ProjectType): ProjectProfile['platform'] {
-  const web = projectType === 'react' || projectType === 'nextjs' || projectType === 'vite' || projectType === 'remix';
+function detectPlatform(
+  deps: Record<string, string>,
+  projectType: ProjectType,
+): ProjectProfile['platform'] {
+  const web =
+    projectType === 'react' ||
+    projectType === 'nextjs' ||
+    projectType === 'vite' ||
+    projectType === 'remix';
   const native = projectType === 'expo' || projectType === 'react-native';
 
   return {

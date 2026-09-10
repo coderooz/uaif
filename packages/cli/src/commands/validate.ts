@@ -15,7 +15,10 @@ function readProjectProfile(directory: string): ProjectProfile {
   try {
     const pkgPath = pathResolve(directory, 'package.json');
     const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8')) as Record<string, unknown>;
-    const deps = { ...(pkg.dependencies as Record<string, string>), ...(pkg.devDependencies as Record<string, string>) };
+    const deps = {
+      ...(pkg.dependencies as Record<string, string>),
+      ...(pkg.devDependencies as Record<string, string>),
+    };
 
     return {
       project: { type: 'node', version: '0.0.0' },

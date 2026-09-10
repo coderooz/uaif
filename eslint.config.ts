@@ -10,7 +10,16 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   // Global ignores
   {
-    ignores: ['dist', 'build', 'node_modules', 'coverage', '.workspace', '**/*.js', '**/*.cjs', '**/*.mjs'],
+    ignores: [
+      'dist',
+      'build',
+      'node_modules',
+      'coverage',
+      '.workspace',
+      '**/*.js',
+      '**/*.cjs',
+      '**/*.mjs',
+    ],
   },
 
   // Base recommended rules
@@ -29,10 +38,7 @@ export default tseslint.config(
       },
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_' },
-      ],
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'warn',
       '@typescript-eslint/no-explicit-any': 'error',
       'no-console': ['warn', { allow: ['warn', 'error'] }],

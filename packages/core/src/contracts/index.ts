@@ -32,6 +32,7 @@ export interface ContractMetadata {
   contexts: ExecutionContext[];
 }
 
+/* eslint-disable @typescript-eslint/no-unused-vars -- TInput/TOutput used by extending interfaces */
 /** Contract definition */
 export interface Contract<TInput = unknown, TOutput = unknown> {
   /** Contract metadata */
@@ -204,9 +205,10 @@ export interface QueryResult<T = DBDocument> {
 }
 
 /** Database contract */
-export interface DatabaseContract<
-  TDocument extends DBDocument = DBDocument,
-> extends Contract<QueryFilter, QueryResult<TDocument>> {
+export interface DatabaseContract<TDocument extends DBDocument = DBDocument> extends Contract<
+  QueryFilter,
+  QueryResult<TDocument>
+> {
   /** Find documents */
   find(query?: QueryOptions): Promise<QueryResult<TDocument>>;
   /** Find a single document by ID */

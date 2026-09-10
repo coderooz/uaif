@@ -10,7 +10,7 @@
 
 - **Name:** Universal Application Integration Framework (UAIF)
 - **Short Name:** UAIF
-- **Repository:** `coderooz/uiaf`
+- **Repository:** `coderooz/uaif`
 - **Visibility:** Private
 - **License:** MIT
 - **Author:** Coderooz <contact@coderooz.in>
@@ -174,10 +174,10 @@ pnpm uaif              # Run CLI
 
 ## GitHub Repository
 
-- **URL:** https://github.com/coderooz/uiaf
+- **URL:** https://github.com/coderooz/uaif
 - **Visibility:** Private
 - **Default Branch:** main
-- **Remote:** git@github.com:coderooz/uiaf.git
+- **Remote:** git@github.com:coderooz/uaif.git
 
 ## GitHub Milestones
 

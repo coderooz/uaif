@@ -1,0 +1,90 @@
+name: Deploy Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'README.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Docs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Validate documentation links
+        run: |
+          echo "Checking documentation links..."
+          # Check for broken internal links
+          find docs -name "*.md" -exec grep -l "\[.*\](.*)" {} \; | while read file; do
+            echo "Checking links in $file"
+            # Extract and validate internal links
+            grep -oP '\[.*?\]\((.*?)\)' "$file" | grep -oP '\((.*?)\)' | tr -d '()' | while read link; do
+              if [[ "$link" == http* ]]; then
+                echo "  External link: $link"
+              elif [[ -f "docs/$link" ]] || [[ -f "$link" ]]; then
+                echo "  ✅ Internal link: $link"
+              else
+                echo "  ⚠️  Potentially broken link: $link"
+              fi
+            done
+          done
+      - name: Build documentation site
+        run: |
+          mkdir -p _site
+          cp -r docs/* _site/
+          cp README.md _site/index.md
+
+          # Create index page if it doesn't exist
+          if [ ! -f "_site/index.md" ]; then
+            cat > _site/index.md << 'EOF'
+          # UAIF Documentation
+
+          Universal Application Integration Framework
+
+          ## Getting Started
+
+          - [Getting Started](docs/GETTING_STARTED.md)
+          - [Concepts](docs/CONCEPTS.md)
+          - [API Reference](docs/API_REFERENCE.md)
+          - [CLI Usage](docs/guides/CLI_USAGE.md)
+          - [Troubleshooting](docs/TROUBLESHOOTING.md)
+          EOF
+          fi
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

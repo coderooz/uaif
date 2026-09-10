@@ -6,12 +6,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/coderooz/uiaf.git",
+    "url": "https://github.com/coderooz/uaif.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://github.com/coderooz/uiaf#readme",
+  "homepage": "https://github.com/coderooz/uaif#readme",
   "bugs": {
-    "url": "https://github.com/coderooz/uiaf/issues"
+    "url": "https://github.com/coderooz/uaif/issues"
   },
   "type": "module",
   "bin": {

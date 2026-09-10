@@ -82,12 +82,7 @@ export interface SegmentMetadata {
 
 /** Provider lifecycle states */
 export type ProviderState =
-  | 'experimental'
-  | 'supported'
-  | 'stable'
-  | 'deprecated'
-  | 'unsupported'
-  | 'removed';
+  'experimental' | 'supported' | 'stable' | 'deprecated' | 'unsupported' | 'removed';
 
 /** Provider identity */
 export interface ProviderIdentity {
@@ -241,14 +236,7 @@ export interface EvidenceSource {
 
 /** Project type identifiers */
 export type ProjectType =
-  | 'react'
-  | 'nextjs'
-  | 'expo'
-  | 'react-native'
-  | 'vite'
-  | 'remix'
-  | 'node'
-  | 'unknown';
+  'react' | 'nextjs' | 'expo' | 'react-native' | 'vite' | 'remix' | 'node' | 'unknown';
 
 /** Runtime identifiers */
 export type RuntimeName = 'node' | 'browser' | 'react-native' | 'edge' | 'deno' | 'bun';

@@ -22,7 +22,6 @@ import type {
   MigrationRequirement,
 } from '../types/index.js';
 import { getProvider, getProvidersBySegment } from '../registry/index.js';
-import { CompatibilityError, IncompatibleFrameworkError } from '../errors/index.js';
 
 // ============================================================================
 // Compatibility Resolution
@@ -257,10 +256,7 @@ function determineMigrationRequirements(
 /**
  * Build recommended implementation string.
  */
-function buildRecommendedImplementation(
-  provider: ProviderDefinition,
-  target: string,
-): string {
+function buildRecommendedImplementation(provider: ProviderDefinition, target: string): string {
   const adapterPackage = provider.adapterPackage || `@uaif/${target}-${provider.identity.id}`;
   return `Use ${adapterPackage} adapter for ${provider.identity.name} on ${target}`;
 }
@@ -297,18 +293,14 @@ export function findBestProvider(
 
   // Filter to compatible providers
   const compatible = results.filter(
-    (r) =>
-      r.result.status === 'SUPPORTED' ||
-      r.result.status === 'SUPPORTED_WITH_WARNINGS',
+    (r) => r.result.status === 'SUPPORTED' || r.result.status === 'SUPPORTED_WITH_WARNINGS',
   );
 
   if (compatible.length === 0) return null;
 
   // Sort by risk level (lower is better)
   const riskOrder = { LOW: 0, MEDIUM: 1, HIGH: 2, CRITICAL: 3 };
-  compatible.sort(
-    (a, b) => riskOrder[a.result.riskLevel] - riskOrder[b.result.riskLevel],
-  );
+  compatible.sort((a, b) => riskOrder[a.result.riskLevel] - riskOrder[b.result.riskLevel]);
 
   const best = compatible[0];
   const provider = getProvider(segment, best.provider)!;

@@ -5,8 +5,16 @@
  * Module: Core Resolver
  */
 
-import type { CompatibilityResult, CompatibilityStatus, ProjectProfile, IntegrationSegment } from '../types/index.js';
-import { resolveCompatibility, findBestProvider as findBestProviderCompat } from '../compatibility/index.js';
+import type {
+  CompatibilityResult,
+  CompatibilityStatus,
+  ProjectProfile,
+  IntegrationSegment,
+} from '../types/index.js';
+import {
+  resolveCompatibility,
+  findBestProvider as findBestProviderCompat,
+} from '../compatibility/index.js';
 
 export interface ResolverOptions {
   profile: ProjectProfile;
@@ -69,7 +77,8 @@ export function resolveProvider(options: ResolverOptions): ResolutionResult {
   }
 
   return {
-    compatible: compatibility.status === 'SUPPORTED' || compatibility.status === 'SUPPORTED_WITH_WARNINGS',
+    compatible:
+      compatibility.status === 'SUPPORTED' || compatibility.status === 'SUPPORTED_WITH_WARNINGS',
     status: compatibility.status,
     recommendation,
     compatibility,
@@ -82,7 +91,7 @@ export function resolveProvider(options: ResolverOptions): ResolutionResult {
 function generateMigrationSteps(
   providerId: string,
   segment: string,
-  currentProvider?: string
+  currentProvider?: string,
 ): string[] {
   const steps: string[] = [];
 
@@ -103,7 +112,7 @@ function generateMigrationSteps(
 
 export function findBestProvider(
   profile: ProjectProfile,
-  segment: IntegrationSegment
+  segment: IntegrationSegment,
 ): ResolverOptions | null {
   const result = findBestProviderCompat(profile, segment);
   if (!result) return null;

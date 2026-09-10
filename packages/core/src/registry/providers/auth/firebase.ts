@@ -11,7 +11,8 @@ export const firebaseProvider: ProviderDefinition = {
   identity: {
     id: 'firebase',
     name: 'Firebase Authentication',
-    description: 'Google Firebase Authentication with email/password, social logins, phone auth, and anonymous auth',
+    description:
+      'Google Firebase Authentication with email/password, social logins, phone auth, and anonymous auth',
     website: 'https://firebase.google.com',
     docs: 'https://firebase.google.com/docs/auth',
   },

@@ -19,7 +19,10 @@ export async function addCommand(args: string[], options: CLIOptions): Promise<v
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8'));
 
   if (manifest.integrations?.[segment] && !options.force) {
-    throw new CLIError(`Integration for "${segment}" already exists. Use --force to replace.`, 'INTEGRATION_EXISTS');
+    throw new CLIError(
+      `Integration for "${segment}" already exists. Use --force to replace.`,
+      'INTEGRATION_EXISTS',
+    );
   }
 
   if (options.dryRun) {
@@ -60,7 +63,10 @@ export async function removeCommand(args: string[], options: CLIOptions): Promis
   }
 
   if (current.provider !== provider) {
-    throw new CLIError(`Current provider for "${segment}" is "${current.provider}", not "${provider}".`, 'PROVIDER_MISMATCH');
+    throw new CLIError(
+      `Current provider for "${segment}" is "${current.provider}", not "${provider}".`,
+      'PROVIDER_MISMATCH',
+    );
   }
 
   if (options.dryRun) {
@@ -93,7 +99,10 @@ export async function switchCommand(args: string[], options: CLIOptions): Promis
   const current = manifest.integrations?.[segment];
 
   if (!current) {
-    throw new CLIError(`No integration found for "${segment}" segment. Use "uaif add" instead.`, 'NO_INTEGRATION');
+    throw new CLIError(
+      `No integration found for "${segment}" segment. Use "uaif add" instead.`,
+      'NO_INTEGRATION',
+    );
   }
 
   if (current.provider === newProvider) {

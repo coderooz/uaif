@@ -120,11 +120,9 @@ export class ConfigurationError extends UAIFBaseError {
 
 export class MissingEnvironmentError extends ConfigurationError {
   constructor(variable: string) {
-    super(
-      `Missing required environment variable: ${variable}`,
-      'MISSING_ENVIRONMENT',
-      { variable },
-    );
+    super(`Missing required environment variable: ${variable}`, 'MISSING_ENVIRONMENT', {
+      variable,
+    });
     this.name = 'MissingEnvironmentError';
   }
 }
@@ -202,11 +200,10 @@ export class ContractError extends UAIFBaseError {
 
 export class ContractViolationError extends ContractError {
   constructor(contract: string, violation: string) {
-    super(
-      `Contract "${contract}" violation: ${violation}`,
-      'CONTRACT_VIOLATION',
-      { contract, violation },
-    );
+    super(`Contract "${contract}" violation: ${violation}`, 'CONTRACT_VIOLATION', {
+      contract,
+      violation,
+    });
     this.name = 'ContractViolationError';
   }
 }
@@ -259,11 +256,7 @@ export class ResolverError extends UAIFBaseError {
 // ============================================================================
 
 export class CLIError extends UAIFBaseError {
-  constructor(
-    message: string,
-    code: string = 'CLI_ERROR',
-    diagnostics?: Record<string, unknown>,
-  ) {
+  constructor(message: string, code: string = 'CLI_ERROR', diagnostics?: Record<string, unknown>) {
     super({
       category: 'CLI',
       code,
@@ -304,11 +297,7 @@ export class ValidationError extends UAIFBaseError {
  * Normalize provider-specific errors to UAIF error categories.
  * Preserves provider-specific diagnostic metadata.
  */
-export function normalizeError(
-  error: unknown,
-  provider: string,
-  context?: string,
-): UAIFBaseError {
+export function normalizeError(error: unknown, provider: string, context?: string): UAIFBaseError {
   if (error instanceof UAIFBaseError) {
     return error;
   }
@@ -335,7 +324,12 @@ export function normalizeError(
       );
     }
 
-    if (message.includes('unauthorized') || message.includes('401') || message.includes('forbidden') || message.includes('403')) {
+    if (
+      message.includes('unauthorized') ||
+      message.includes('401') ||
+      message.includes('forbidden') ||
+      message.includes('403')
+    ) {
       return new ProviderError(
         `Authentication error from ${provider}: ${error.message}`,
         'AUTHENTICATION_ERROR',

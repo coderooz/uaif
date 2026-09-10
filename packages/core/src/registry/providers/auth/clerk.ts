@@ -11,7 +11,8 @@ export const clerkProvider: ProviderDefinition = {
   identity: {
     id: 'clerk',
     name: 'Clerk',
-    description: 'Complete user management platform with authentication, user profiles, and multi-tenant support',
+    description:
+      'Complete user management platform with authentication, user profiles, and multi-tenant support',
     website: 'https://clerk.com',
     docs: 'https://clerk.com/docs',
   },

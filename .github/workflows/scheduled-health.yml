@@ -1,0 +1,105 @@
+name: Scheduled Health Check
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # Weekly on Monday at 9 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health-check:
+    name: Repository Health Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Run full CI
+        run: |
+          echo "Running full CI checks..."
+          pnpm lint
+          pnpm -r typecheck
+          pnpm format:check
+          pnpm build
+          pnpm test
+          echo "✅ All CI checks passed"
+      - name: Check npm package health
+        run: |
+          echo "Checking npm package health..."
+
+          PACKAGES=(
+            "@uaif/core"
+            "@uaif/cli"
+            "@uaif/adapter-clerk"
+            "@uaif/adapter-firebase-auth"
+            "@uaif/adapter-mongodb"
+            "@uaif/adapter-cloudinary"
+            "@uaif/adapter-react"
+            "@uaif/adapter-next"
+            "@uaif/adapter-expo"
+          )
+
+          for pkg in "${PACKAGES[@]}"; do
+            echo "Checking $pkg..."
+            npm view "$pkg" version 2>/dev/null || echo "⚠️  $pkg not yet published"
+            npm view "$pkg" dist-tags.latest 2>/dev/null || true
+          done
+      - name: Check documentation site
+        run: |
+          echo "Checking documentation site..."
+          DOCS_URL="https://coderooz.github.io/uaif/"
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$DOCS_URL" 2>/dev/null || echo "000")
+
+          if [ "$HTTP_STATUS" = "200" ]; then
+            echo "✅ Documentation site is accessible"
+          else
+            echo "⚠️  Documentation site returned HTTP $HTTP_STATUS"
+          fi
+      - name: Check GitHub repository
+        run: |
+          echo "Checking GitHub repository..."
+          if [ -f ".github/workflows/ci.yml" ]; then
+            echo "✅ CI workflow exists"
+          else
+            echo "❌ CI workflow missing"
+            exit 1
+          fi
+
+          if [ -f "SECURITY.md" ]; then
+            echo "✅ SECURITY.md exists"
+          else
+            echo "❌ SECURITY.md missing"
+            exit 1
+          fi
+
+          if [ -f "LICENSE" ]; then
+            echo "✅ LICENSE exists"
+          else
+            echo "❌ LICENSE missing"
+            exit 1
+          fi
+      - name: Check for dependency updates
+        run: |
+          echo "Checking for dependency updates..."
+          pnpm outdated || true
+      - name: Health check summary
+        run: |
+          echo "📋 Health Check Summary"
+          echo "====================="
+          echo "✅ CI: All checks passed"
+          echo "✅ Repository: All required files present"
+          echo "⚠️  npm packages: Check above for publication status"
+          echo "⚠️  Dependencies: Check above for outdated packages"
+          echo ""
+          echo "Next steps:"
+          echo "1. Review any warnings above"
+          echo "2. Update outdated dependencies if needed"
+          echo "3. Ensure all packages are published"

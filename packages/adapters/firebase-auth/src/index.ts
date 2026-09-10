@@ -44,7 +44,7 @@ export class FirebaseAuthAdapter implements AuthContract {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, returnSecureToken: true }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -93,7 +93,7 @@ export class FirebaseAuthAdapter implements AuthContract {
           displayName,
           returnSecureToken: true,
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -141,7 +141,7 @@ export class FirebaseAuthAdapter implements AuthContract {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ idToken: this.currentToken }),
-        }
+        },
       );
 
       if (!response.ok) return null;
@@ -157,7 +157,9 @@ export class FirebaseAuthAdapter implements AuthContract {
         displayName: userData.displayName as string,
         imageUrl: userData.photoUrl as string,
         verified: true,
-        metadata: userData.customAttributes ? JSON.parse(userData.customAttributes as string) : undefined,
+        metadata: userData.customAttributes
+          ? JSON.parse(userData.customAttributes as string)
+          : undefined,
         createdAt: new Date(Number(userData.createdAt) * 1000),
         updatedAt: new Date(Number(userData.lastLoginAt) * 1000),
       };
@@ -199,7 +201,7 @@ export class FirebaseAuthAdapter implements AuthContract {
           displayName: data.displayName,
           photoUrl: data.imageUrl,
         }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -223,7 +225,7 @@ export class FirebaseAuthAdapter implements AuthContract {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken: this.currentToken }),
-      }
+      },
     );
 
     if (!response.ok) {
@@ -241,7 +243,7 @@ export class FirebaseAuthAdapter implements AuthContract {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ idToken: token }),
-        }
+        },
       );
 
       if (!response.ok) return null;

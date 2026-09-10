@@ -55,13 +55,17 @@ A provider change requires updating integration configuration, not rewriting app
 
 ## Packages
 
-| Package               | Description                                                |
-| --------------------- | ---------------------------------------------------------- |
-| `@uaif/core`          | Contracts, types, registry, compatibility engine, resolver |
-| `@uaif/cli`           | Command-line interface for managing integrations           |
-| `@uaif/adapter-react` | React-specific integration adapter                         |
-| `@uaif/adapter-next`  | Next.js-specific integration adapter                       |
-| `@uaif/adapter-expo`  | Expo-specific integration adapter                          |
+| Package                       | Description                                                |
+| ----------------------------- | ---------------------------------------------------------- |
+| `@uaif/core`                  | Contracts, types, registry, compatibility engine, resolver |
+| `@uaif/cli`                   | Command-line interface for managing integrations           |
+| `@uaif/adapter-react`         | React integration adapter                                  |
+| `@uaif/adapter-next`          | Next.js integration adapter                                |
+| `@uaif/adapter-expo`          | Expo integration adapter                                   |
+| `@uaif/adapter-clerk`         | Clerk authentication adapter                               |
+| `@uaif/adapter-firebase-auth` | Firebase authentication adapter                            |
+| `@uaif/adapter-mongodb`       | MongoDB database adapter                                   |
+| `@uaif/adapter-cloudinary`    | Cloudinary storage adapter                                 |
 
 ## Integration Segments
 
@@ -79,16 +83,22 @@ A provider change requires updating integration configuration, not rewriting app
 ## CLI Commands
 
 ```bash
-uaif init                    # Initialize UAIF in current project
-uaif detect                  # Detect project environment
-uaif add auth clerk          # Add Clerk authentication
-uaif switch auth clerk firebase  # Switch from Clerk to Firebase
-uaif remove auth clerk       # Remove Clerk integration
-uaif list                    # List current integrations
-uaif validate                # Validate integration state
-uaif doctor                  # Diagnose integration health
-uaif plan auth clerk --dry-run  # Preview changes
+uaif detect              # Detect project environment
+uaif list                # List registered providers
+uaif list -s auth        # Filter by segment
+uaif validate            # Validate integration state
 ```
+
+## Documentation
+
+Full documentation is available in the [`docs/`](./docs/) directory:
+
+- **[Getting Started](./docs/GETTING_STARTED.md)** — Install and run in 5 minutes
+- **[Concepts](./docs/CONCEPTS.md)** — Core architecture and design principles
+- **[API Reference](./docs/API_REFERENCE.md)** — Complete type signatures and exports
+- **[Guides](./docs/guides/)** — Step-by-step instructions for providers, adapters, CLI, and manifests
+- **[Troubleshooting](./docs/TROUBLESHOOTING.md)** — Common issues and solutions
+- **[Architecture](./docs/architecture/)** — System design and decision records
 
 ## Getting Started
 
@@ -102,8 +112,14 @@ pnpm build
 # Run tests
 pnpm test
 
-# Use the CLI
-pnpm uaif init
+# Detect project environment
+pnpm uaif detect
+
+# List registered providers
+pnpm uaif list
+
+# Validate integration manifest
+pnpm uaif validate
 ```
 
 ## Development
@@ -145,11 +161,13 @@ uaif/
 │   └── adapters/      # Framework adapters
 │       ├── react/
 │       ├── next/
-│       └── expo/
-├── integrations/      # Provider implementations
-├── registry/          # Provider registry data
-├── fixtures/          # Test fixture projects
+│       ├── expo/
+│       ├── clerk/
+│       ├── firebase-auth/
+│       ├── mongodb/
+│       └── cloudinary/
 ├── docs/              # Documentation
+├── fixtures/          # Test fixture projects
 └── .workspace/        # Development artifacts
 ```
 

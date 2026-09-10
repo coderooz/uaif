@@ -1,0 +1,114 @@
+name: Post-Publication Verification
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to verify'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify-npm:
+    name: Verify npm Publication
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for npm propagation
+        run: |
+          echo "Waiting 60 seconds for npm propagation..."
+          sleep 60
+      - name: Verify @uaif/core
+        run: |
+          echo "Verifying @uaif/core..."
+          VERSION="${{ inputs.version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          fi
+
+          npm view @uaif/core version 2>/dev/null | grep -q "$VERSION"
+          if [ $? -eq 0 ]; then
+            echo "✅ @uaif/core@$VERSION is available on npm"
+          else
+            echo "❌ @uaif/core@$VERSION not found on npm"
+            exit 1
+          fi
+      - name: Verify @uaif/cli
+        run: |
+          echo "Verifying @uaif/cli..."
+          VERSION="${{ inputs.version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          fi
+
+          npm view @uaif/cli version 2>/dev/null | grep -q "$VERSION"
+          if [ $? -eq 0 ]; then
+            echo "✅ @uaif/cli@$VERSION is available on npm"
+          else
+            echo "❌ @uaif/cli@$VERSION not found on npm"
+            exit 1
+          fi
+      - name: Verify adapters
+        run: |
+          echo "Verifying adapter packages..."
+          VERSION="${{ inputs.version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          fi
+
+          ADAPTERS=(
+            "adapter-clerk"
+            "adapter-firebase-auth"
+            "adapter-mongodb"
+            "adapter-cloudinary"
+            "adapter-react"
+            "adapter-next"
+            "adapter-expo"
+          )
+
+          for adapter in "${ADAPTERS[@]}"; do
+            npm view "@uaif/$adapter" version 2>/dev/null | grep -q "$VERSION"
+            if [ $? -eq 0 ]; then
+              echo "✅ @uaif/$adapter@$VERSION is available on npm"
+            else
+              echo "❌ @uaif/$adapter@$VERSION not found on npm"
+              exit 1
+            fi
+          done
+      - name: Test installation
+        run: |
+          echo "Testing package installation..."
+          mkdir -p /tmp/test-install
+          cd /tmp/test-install
+
+          cat > package.json << 'EOF'
+          {
+            "name": "uaif-test",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "@uaif/core": "latest",
+              "@uaif/cli": "latest"
+            }
+          }
+          EOF
+
+          npm install 2>&1 | tee install.log
+
+          if grep -q "ERR!" install.log; then
+            echo "❌ Installation failed"
+            exit 1
+          fi
+
+          echo "✅ Packages installed successfully"
+
+          # Verify imports
+          node -e "const { createManifest } = require('@uaif/core'); console.log('✅ @uaif/core imports work')"
+          node -e "const { detectFramework } = require('@uaif/cli'); console.log('✅ @uaif/cli imports work')"
+
+          cd /tmp
+          rm -rf test-install

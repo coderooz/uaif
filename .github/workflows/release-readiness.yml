@@ -1,0 +1,160 @@
+name: Release Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.0)'
+        required: true
+        type: string
+      dry-run:
+        description: 'Perform dry run (true/false)'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  readiness-check:
+    name: Release Readiness Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Verify CI passes
+        run: |
+          echo "Running full CI checks..."
+          pnpm lint
+          pnpm -r typecheck
+          pnpm format:check
+          pnpm build
+          pnpm test
+          echo "✅ All CI checks passed"
+      - name: Verify package.json completeness
+        run: |
+          echo "Checking package.json files..."
+          PACKAGES=(
+            "packages/core"
+            "packages/cli"
+            "packages/adapters/clerk"
+            "packages/adapters/firebase-auth"
+            "packages/adapters/mongodb"
+            "packages/adapters/cloudinary"
+            "packages/adapters/react"
+            "packages/adapters/next"
+            "packages/adapters/expo"
+          )
+
+          for pkg in "${PACKAGES[@]}"; do
+            if [ ! -f "$pkg/package.json" ]; then
+              echo "❌ Missing package.json: $pkg"
+              exit 1
+            fi
+            
+            # Check required fields
+            NAME=$(jq -r '.name' "$pkg/package.json" 2>/dev/null)
+            VERSION=$(jq -r '.version' "$pkg/package.json" 2>/dev/null)
+            DESCRIPTION=$(jq -r '.description' "$pkg/package.json" 2>/dev/null)
+            LICENSE=$(jq -r '.license' "$pkg/package.json" 2>/dev/null)
+            REPO=$(jq -r '.repository.url' "$pkg/package.json" 2>/dev/null)
+            
+            if [ -z "$NAME" ] || [ "$NAME" = "null" ]; then
+              echo "❌ Missing name in $pkg/package.json"
+              exit 1
+            fi
+            
+            if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+              echo "❌ Missing version in $pkg/package.json"
+              exit 1
+            fi
+            
+            if [ -z "$DESCRIPTION" ] || [ "$DESCRIPTION" = "null" ]; then
+              echo "❌ Missing description in $pkg/package.json"
+              exit 1
+            fi
+            
+            if [ "$LICENSE" != "MIT" ]; then
+              echo "❌ License must be MIT in $pkg/package.json"
+              exit 1
+            fi
+            
+            if echo "$REPO" | grep -q "uiaf"; then
+              echo "❌ Repository URL contains 'uiaf' in $pkg/package.json"
+              exit 1
+            fi
+            
+            echo "✅ $pkg package.json is valid"
+          done
+      - name: Verify README exists
+        run: |
+          echo "Checking README files..."
+          if [ ! -f "README.md" ]; then
+            echo "❌ Root README.md missing"
+            exit 1
+          fi
+
+          PACKAGES=(
+            "packages/core"
+            "packages/cli"
+            "packages/adapters/clerk"
+            "packages/adapters/firebase-auth"
+            "packages/adapters/mongodb"
+            "packages/adapters/cloudinary"
+            "packages/adapters/react"
+            "packages/adapters/next"
+            "packages/adapters/expo"
+          )
+
+          for pkg in "${PACKAGES[@]}"; do
+            if [ ! -f "$pkg/README.md" ]; then
+              echo "❌ Missing README.md: $pkg"
+              exit 1
+            fi
+            echo "✅ $pkg README.md exists"
+          done
+      - name: Verify LICENSE exists
+        run: |
+          if [ ! -f "LICENSE" ]; then
+            echo "❌ Root LICENSE missing"
+            exit 1
+          fi
+          echo "✅ LICENSE exists"
+      - name: Version check
+        run: |
+          echo "Checking version..."
+          EXPECTED_VERSION="${{ inputs.version }}"
+          ROOT_VERSION=$(jq -r '.version' package.json)
+
+          if [ "$ROOT_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "❌ Version mismatch: package.json has $ROOT_VERSION, expected $EXPECTED_VERSION"
+            exit 1
+          fi
+
+          echo "✅ Version matches: $ROOT_VERSION"
+      - name: Dry run summary
+        if: inputs.dry-run == true
+        run: |
+          echo "📋 Dry Run Summary"
+          echo "=================="
+          echo "Version: ${{ inputs.version }}"
+          echo "Packages to publish:"
+          echo "  - @uaif/core"
+          echo "  - @uaif/cli"
+          echo "  - @uaif/adapter-clerk"
+          echo "  - @uaif/adapter-firebase-auth"
+          echo "  - @uaif/adapter-mongodb"
+          echo "  - @uaif/adapter-cloudinary"
+          echo "  - @uaif/adapter-react"
+          echo "  - @uaif/adapter-next"
+          echo "  - @uaif/adapter-expo"
+          echo ""
+          echo "Ready to proceed with release preparation"

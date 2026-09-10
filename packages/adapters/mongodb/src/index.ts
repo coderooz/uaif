@@ -14,7 +14,9 @@ export interface MongoDBAdapterConfig {
   collection: string;
 }
 
-export class MongoDBAdapter<TDocument extends DBDocument = DBDocument> implements DatabaseContract<TDocument> {
+export class MongoDBAdapter<
+  TDocument extends DBDocument = DBDocument,
+> implements DatabaseContract<TDocument> {
   readonly metadata: ContractMetadata = {
     id: 'mongodb',
     version: '0.1.0',
@@ -84,7 +86,7 @@ export class MongoDBAdapter<TDocument extends DBDocument = DBDocument> implement
       cursor = cursor.project(projection);
     }
 
-    const items = await cursor.toArray() as unknown as TDocument[];
+    const items = (await cursor.toArray()) as unknown as TDocument[];
     const total = await coll.countDocuments(filter);
 
     return {
@@ -127,7 +129,7 @@ export class MongoDBAdapter<TDocument extends DBDocument = DBDocument> implement
     const result = await coll.findOneAndUpdate(
       { _id: objectId } as Document,
       { $set: { ...data, updatedAt: new Date() } as Document },
-      { returnDocument: 'after' }
+      { returnDocument: 'after' },
     );
 
     if (!result) {
@@ -198,7 +200,7 @@ export class MongoDBAdapter<TDocument extends DBDocument = DBDocument> implement
 }
 
 export function createMongoDBAdapter<TDocument extends DBDocument = DBDocument>(
-  config: MongoDBAdapterConfig
+  config: MongoDBAdapterConfig,
 ): MongoDBAdapter<TDocument> {
   return new MongoDBAdapter<TDocument>(config);
 }

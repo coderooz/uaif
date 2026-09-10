@@ -86,7 +86,10 @@ export class ClerkAuthAdapter implements AuthContract {
     const { email, password, displayName } = input;
 
     if (!this.config.secretKey) {
-      return { success: false, error: 'Secret key required for registration. Use server-side context.' };
+      return {
+        success: false,
+        error: 'Secret key required for registration. Use server-side context.',
+      };
     }
 
     const response = await fetch('https://api.clerk.com/v1/users', {
@@ -269,10 +272,14 @@ export class ClerkAuthAdapter implements AuthContract {
   private mapUser(clerkUser: Record<string, unknown>): UAIFUser {
     return {
       id: clerkUser.id as string,
-      email: ((clerkUser.email_addresses as Array<{ email_address: string }>)?.[0]?.email_address) || '',
-      displayName: [clerkUser.first_name, clerkUser.last_name].filter(Boolean).join(' ') || undefined,
+      email:
+        (clerkUser.email_addresses as Array<{ email_address: string }>)?.[0]?.email_address || '',
+      displayName:
+        [clerkUser.first_name, clerkUser.last_name].filter(Boolean).join(' ') || undefined,
       imageUrl: clerkUser.image_url as string | undefined,
-      verified: (clerkUser.email_addresses as Array<{ verification?: { status: string } }>)?.[0]?.verification?.status === 'verified',
+      verified:
+        (clerkUser.email_addresses as Array<{ verification?: { status: string } }>)?.[0]
+          ?.verification?.status === 'verified',
       metadata: clerkUser.public_metadata as Record<string, unknown> | undefined,
       createdAt: new Date(clerkUser.created_at as string),
       updatedAt: new Date(clerkUser.updated_at as string),

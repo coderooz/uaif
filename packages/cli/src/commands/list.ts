@@ -15,14 +15,12 @@ export function registerListCommand(program: Command): void {
     .option('-s, --segment <segment>', 'Filter by integration segment (auth, database, storage)')
     .action((options) => {
       const segment = options.segment as string | undefined;
-      const providers = segment
-        ? getBuiltinProvidersBySegment(segment)
-        : builtinProviders;
+      const providers = segment ? getBuiltinProvidersBySegment(segment) : builtinProviders;
 
       if (providers.length === 0) {
-        console.log(segment
-          ? `No providers found for segment "${segment}".`
-          : 'No providers registered.');
+        console.log(
+          segment ? `No providers found for segment "${segment}".` : 'No providers registered.',
+        );
         return;
       }
 

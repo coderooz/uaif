@@ -151,7 +151,6 @@ export class CloudinaryStorageAdapter implements StorageContract {
       },
     }));
   }
-
 }
 
 export function createCloudinaryAdapter(config: CloudinaryAdapterConfig): CloudinaryStorageAdapter {

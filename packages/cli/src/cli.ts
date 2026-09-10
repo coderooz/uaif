@@ -53,9 +53,9 @@ function handleError(error: unknown): never {
 const isMainModule =
   process.argv[1] &&
   (process.argv[1].endsWith('/cli.js') ||
-   process.argv[1].endsWith('\\cli.js') ||
-   process.argv[1].endsWith('/cli.ts') ||
-   process.argv[1].endsWith('\\cli.ts'));
+    process.argv[1].endsWith('\\cli.js') ||
+    process.argv[1].endsWith('/cli.ts') ||
+    process.argv[1].endsWith('\\cli.ts'));
 
 if (isMainModule) {
   try {

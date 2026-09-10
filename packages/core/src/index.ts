@@ -122,9 +122,7 @@ export {
   getCompatibilityEntry,
   getCompatibleProvidersForTarget,
 } from './registry/compatibility-data.js';
-export type {
-  CompatibilityMatrixEntry,
-} from './registry/compatibility-data.js';
+export type { CompatibilityMatrixEntry } from './registry/compatibility-data.js';
 
 // Compatibility
 export {
@@ -134,23 +132,11 @@ export {
 } from './compatibility/index.js';
 
 // Manifest
-export {
-  ManifestManager,
-  parseManifest,
-  createEmptyManifest,
-} from './manifest/index.js';
+export { ManifestManager, parseManifest, createEmptyManifest } from './manifest/index.js';
 
 // Detection
-export {
-  detectProjectProfile,
-} from './detection/index.js';
+export { detectProjectProfile } from './detection/index.js';
 
 // Resolver
-export {
-  resolveProvider,
-  findBestProvider as findBestResolverProvider,
-} from './resolver/index.js';
-export type {
-  ResolverOptions,
-  ResolutionResult,
-} from './resolver/index.js';
+export { resolveProvider, findBestProvider as findBestResolverProvider } from './resolver/index.js';
+export type { ResolverOptions, ResolutionResult } from './resolver/index.js';

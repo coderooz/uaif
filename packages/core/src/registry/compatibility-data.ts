@@ -83,20 +83,15 @@ export function getCompatibilityEntry(
   provider: string,
   target: string,
 ): CompatibilityMatrixEntry | undefined {
-  return compatibilityMatrix.find(
-    (e) => e.provider === provider && e.target === target,
-  );
+  return compatibilityMatrix.find((e) => e.provider === provider && e.target === target);
 }
 
 /**
  * Get all providers compatible with a given target.
  */
-export function getCompatibleProvidersForTarget(
-  target: string,
-): CompatibilityMatrixEntry[] {
+export function getCompatibleProvidersForTarget(target: string): CompatibilityMatrixEntry[] {
   return compatibilityMatrix.filter(
     (e) =>
-      e.target === target &&
-      (e.status === 'SUPPORTED' || e.status === 'SUPPORTED_WITH_WARNINGS'),
+      e.target === target && (e.status === 'SUPPORTED' || e.status === 'SUPPORTED_WITH_WARNINGS'),
   );
 }

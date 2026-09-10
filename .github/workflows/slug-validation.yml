@@ -1,0 +1,55 @@
+name: Slug Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-slug:
+    name: Validate Repository Slug
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check repository slug
+        run: |
+          echo "Validating repository slug..."
+          REPO_URL=$(git remote get-url origin)
+          echo "Remote URL: $REPO_URL"
+
+          if echo "$REPO_URL" | grep -q "uiaf"; then
+            echo "❌ Repository slug contains 'uiaf' (should be 'uaif')"
+            echo "Please rename the repository on GitHub"
+            exit 1
+          fi
+
+          if echo "$REPO_URL" | grep -q "uaif"; then
+            echo "✅ Repository slug is correct: uaif"
+          else
+            echo "⚠️  Could not verify repository slug"
+          fi
+      - name: Check package.json URLs
+        run: |
+          echo "Checking package.json repository URLs..."
+          UIAF_REFS=$(grep -r "uiaf" --include="package.json" . 2>/dev/null | grep -v node_modules || true)
+          if [ -n "$UIAF_REFS" ]; then
+            echo "❌ Found 'uiaf' references in package.json files:"
+            echo "$UIAF_REFS"
+            exit 1
+          fi
+          echo "✅ All package.json URLs are correct"
+      - name: Check documentation URLs
+        run: |
+          echo "Checking documentation URLs..."
+          UIAF_REFS=$(grep -r "uiaf" --include="*.md" . 2>/dev/null | grep -v node_modules | grep -v ".workspace/" || true)
+          if [ -n "$UIAF_REFS" ]; then
+            echo "❌ Found 'uiaf' references in documentation:"
+            echo "$UIAF_REFS"
+            exit 1
+          fi
+          echo "✅ All documentation URLs are correct"

@@ -1,0 +1,112 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 9 * * 1' # Weekly on Monday at 9 AM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  secret-scan:
+    name: Secret Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan for hardcoded secrets
+        run: |
+          echo "Scanning for hardcoded secrets..."
+          PATTERNS=(
+            'sk_live_[a-zA-Z0-9]'
+            'pk_live_[a-zA-Z0-9]'
+            'sk_test_[a-zA-Z0-9]'
+            'pk_test_[a-zA-Z0-9]'
+            'ghp_[a-zA-Z0-9]'
+            'gho_[a-zA-Z0-9]'
+            'npm_[a-zA-Z0-9]'
+            'AKIA[A-Z0-9]'
+            'password\s*[:=]\s*["\x27][^"\x27]+'
+            'secret\s*[:=]\s*["\x27][^"\x27]+'
+            'api[_-]?key\s*[:=]\s*["\x27][^"\x27]+'
+          )
+          FOUND=0
+          for pattern in "${PATTERNS[@]}"; do
+            MATCHES=$(grep -r -i -E "$pattern" --include="*.ts" --include="*.js" --include="*.json" --include="*.md" . 2>/dev/null | grep -v node_modules | grep -v dist | grep -v ".git/" || true)
+            if [ -n "$MATCHES" ]; then
+              echo "WARNING: Potential secret found with pattern: $pattern"
+              echo "$MATCHES"
+              FOUND=1
+            fi
+          done
+          if [ "$FOUND" -eq 1 ]; then
+            echo ""
+            echo "⚠️  Potential secrets detected. Please review and remove before publishing."
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets detected"
+
+  dependency-audit:
+    name: Dependency Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
+      - name: Check for outdated dependencies
+        run: pnpm outdated || true
+
+  env-check:
+    name: Environment File Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for committed .env files
+        run: |
+          echo "Checking for committed .env files..."
+          ENV_FILES=$(git ls-files | grep -E '\.env$|\.env\.' || true)
+          if [ -n "$ENV_FILES" ]; then
+            echo "❌ Found committed .env files:"
+            echo "$ENV_FILES"
+            exit 1
+          fi
+          echo "✅ No .env files committed"
+      - name: Check .gitignore coverage
+        run: |
+          echo "Verifying .gitignore coverage..."
+          REQUIRED_PATTERNS=(
+            ".env"
+            ".env.local"
+            ".env.*.local"
+            "node_modules/"
+            "dist/"
+            "*.log"
+          )
+          MISSING=0
+          for pattern in "${REQUIRED_PATTERNS[@]}"; do
+            if ! grep -q "$pattern" .gitignore; then
+              echo "⚠️  Missing from .gitignore: $pattern"
+              MISSING=1
+            fi
+          done
+          if [ "$MISSING" -eq 1 ]; then
+            echo "Please add missing patterns to .gitignore"
+            exit 1
+          fi
+          echo "✅ .gitignore has required patterns"

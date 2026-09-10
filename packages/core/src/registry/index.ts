@@ -41,7 +41,9 @@ export function registerProvider(provider: ProviderDefinition): void {
   const key = `${provider.segment}:${provider.identity.id}`;
 
   if (providerRegistry.has(key)) {
-    throw new Error(`Provider "${provider.identity.id}" already registered for segment "${provider.segment}"`);
+    throw new Error(
+      `Provider "${provider.identity.id}" already registered for segment "${provider.segment}"`,
+    );
   }
 
   providerRegistry.set(key, provider);
@@ -90,10 +92,7 @@ export function getRegisteredSegments(): IntegrationSegment[] {
 /**
  * Check if a provider is registered.
  */
-export function isProviderRegistered(
-  segment: IntegrationSegment,
-  providerId: string,
-): boolean {
+export function isProviderRegistered(segment: IntegrationSegment, providerId: string): boolean {
   return providerRegistry.has(`${segment}:${providerId}`);
 }
 
@@ -153,7 +152,9 @@ export function getCompatibleProviders(
   return getProvidersForTarget(segment, target).filter((provider) => {
     const compatibility = provider.compatibility.find((c) => c.target === target);
     if (!compatibility) return false;
-    return compatibility.status === 'SUPPORTED' || compatibility.status === 'SUPPORTED_WITH_WARNINGS';
+    return (
+      compatibility.status === 'SUPPORTED' || compatibility.status === 'SUPPORTED_WITH_WARNINGS'
+    );
   });
 }
 

@@ -26,13 +26,17 @@ export function registerDetectCommand(program: Command): void {
         console.log(`Framework:    ${profile.project.version}`);
         console.log(`Runtime:      ${profile.runtime.name} ${profile.runtime.version}`);
         console.log(`Language:     ${profile.language.name} ${profile.language.version}`);
-        console.log(`Package Mgr:  ${profile.packageManager.name} ${profile.packageManager.version}`);
+        console.log(
+          `Package Mgr:  ${profile.packageManager.name} ${profile.packageManager.version}`,
+        );
 
         if (profile.react) {
           console.log(`React:        ${profile.react.version}`);
         }
 
-        console.log(`\nPlatforms:    web=${profile.platform.web}, native=${profile.platform.native}, desktop=${profile.platform.desktop}`);
+        console.log(
+          `\nPlatforms:    web=${profile.platform.web}, native=${profile.platform.native}, desktop=${profile.platform.desktop}`,
+        );
         console.log(`Targets:      ${profile.runtime.targets.join(', ')}`);
 
         if (profile.peerDependencies && Object.keys(profile.peerDependencies).length > 0) {

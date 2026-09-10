@@ -16,21 +16,27 @@ UAIF is a monorepo managed with pnpm workspaces.
 ```
 uaif/
 ├── packages/
-│   ├── core/          # Core contracts, types, registry
+│   ├── core/          # Core contracts, types, registry, compatibility engine
 │   ├── cli/           # CLI tool
 │   └── adapters/      # Framework adapters
-├── integrations/      # Provider implementations
-├── registry/          # Provider registry data
+│       ├── react/
+│       ├── next/
+│       ├── expo/
+│       ├── clerk/
+│       ├── firebase-auth/
+│       ├── mongodb/
+│       └── cloudinary/
+├── docs/              # Documentation
 └── fixtures/          # Test fixture projects
 ```
 
 ## Adding a Provider
 
-1. Create the provider definition in `registry/providers/`
-2. Implement the adapter in `integrations/<segment>/<provider>/`
-3. Add compatibility metadata
-4. Write contract tests
-5. Update documentation
+1. Create the provider definition in `packages/core/src/registry/providers/`
+2. Create an adapter package in `packages/adapters/<provider-name>/`
+3. Add compatibility metadata in `packages/core/src/registry/compatibility-matrix.ts`
+4. Write tests in `packages/core/src/registry/`
+5. Update documentation in `docs/guides/ADDING_PROVIDERS.md`
 
 ## Code Standards
 
