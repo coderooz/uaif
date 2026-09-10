@@ -1,12 +1,13 @@
 {
-  "name": "@uaif/cloudinary",
+  "name": "@uaif/adapter-cloudinary",
   "version": "0.1.0",
   "description": "UAIF adapter for Cloudinary storage",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "exports": {
     ".": {

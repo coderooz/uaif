@@ -1,12 +1,13 @@
 {
-  "name": "@uaif/firebase-auth",
+  "name": "@uaif/adapter-firebase-auth",
   "version": "0.1.0",
   "description": "UAIF adapter for Firebase Authentication",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "exports": {
     ".": {

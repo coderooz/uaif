@@ -1,12 +1,13 @@
 {
-  "name": "@uaif/mongodb",
+  "name": "@uaif/adapter-mongodb",
   "version": "0.1.0",
   "description": "UAIF adapter for MongoDB database",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "exports": {
     ".": {
