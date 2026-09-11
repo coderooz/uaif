@@ -43,7 +43,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "mongodb": "^6.0.0",
+    "mongodb": "^7.6.0",
     "@uaif/core": "workspace:*"
   },
   "devDependencies": {
