@@ -70,6 +70,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Build core first
+        id: build-core
+        run: pnpm --filter @uaif/core build
+
       - name: Lint
         id: lint
         run: pnpm lint
