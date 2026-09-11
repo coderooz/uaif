@@ -2,6 +2,25 @@
   "name": "@uaif/adapter-mongodb",
   "version": "0.1.0",
   "description": "UAIF adapter for MongoDB database",
+  "author": "Coderooz <contact@coderooz.in>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coderooz/uaif.git",
+    "directory": "packages/adapters/mongodb"
+  },
+  "homepage": "https://coderooz.github.io/uaif/",
+  "bugs": {
+    "url": "https://github.com/coderooz/uaif/issues"
+  },
+  "keywords": [
+    "uaif",
+    "adapter",
+    "mongodb",
+    "database",
+    "nosql",
+    "integration"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -30,17 +49,6 @@
   "devDependencies": {
     "typescript": "^5.7.0",
     "vitest": "^2.1.0"
-  },
-  "license": "MIT",
-  "author": "Coderooz",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/coderooz/uaif.git",
-    "directory": "packages/adapters/mongodb"
-  },
-  "homepage": "https://github.com/coderooz/uaif#readme",
-  "bugs": {
-    "url": "https://github.com/coderooz/uaif/issues"
   },
   "engines": {
     "node": ">=20.0.0"

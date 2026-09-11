@@ -9,10 +9,19 @@
     "url": "https://github.com/coderooz/uaif.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://github.com/coderooz/uaif#readme",
+  "homepage": "https://coderooz.github.io/uaif/",
   "bugs": {
     "url": "https://github.com/coderooz/uaif/issues"
   },
+  "keywords": [
+    "uaif",
+    "cli",
+    "integration",
+    "provider",
+    "scaffolding",
+    "validation",
+    "detect"
+  ],
   "type": "module",
   "bin": {
     "uaif": "./dist/cli.js"

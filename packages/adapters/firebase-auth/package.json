@@ -2,6 +2,25 @@
   "name": "@uaif/adapter-firebase-auth",
   "version": "0.1.0",
   "description": "UAIF adapter for Firebase Authentication",
+  "author": "Coderooz <contact@coderooz.in>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coderooz/uaif.git",
+    "directory": "packages/adapters/firebase-auth"
+  },
+  "homepage": "https://coderooz.github.io/uaif/",
+  "bugs": {
+    "url": "https://github.com/coderooz/uaif/issues"
+  },
+  "keywords": [
+    "uaif",
+    "adapter",
+    "firebase",
+    "authentication",
+    "auth",
+    "integration"
+  ],
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -34,17 +53,6 @@
   "peerDependencies": {
     "react": ">=18.0.0",
     "react-dom": ">=18.0.0"
-  },
-  "license": "MIT",
-  "author": "Coderooz",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/coderooz/uaif.git",
-    "directory": "packages/adapters/firebase-auth"
-  },
-  "homepage": "https://github.com/coderooz/uaif#readme",
-  "bugs": {
-    "url": "https://github.com/coderooz/uaif/issues"
   },
   "engines": {
     "node": ">=20.0.0"

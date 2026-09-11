@@ -9,10 +9,17 @@
     "url": "https://github.com/coderooz/uaif.git",
     "directory": "packages/adapters/react"
   },
-  "homepage": "https://github.com/coderooz/uaif#readme",
+  "homepage": "https://coderooz.github.io/uaif/",
   "bugs": {
     "url": "https://github.com/coderooz/uaif/issues"
   },
+  "keywords": [
+    "uaif",
+    "adapter",
+    "react",
+    "hooks",
+    "integration"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

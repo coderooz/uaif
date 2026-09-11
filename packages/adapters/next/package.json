@@ -9,10 +9,18 @@
     "url": "https://github.com/coderooz/uaif.git",
     "directory": "packages/adapters/next"
   },
-  "homepage": "https://github.com/coderooz/uaif#readme",
+  "homepage": "https://coderooz.github.io/uaif/",
   "bugs": {
     "url": "https://github.com/coderooz/uaif/issues"
   },
+  "keywords": [
+    "uaif",
+    "adapter",
+    "nextjs",
+    "next",
+    "server-components",
+    "integration"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

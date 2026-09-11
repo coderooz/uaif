@@ -9,10 +9,18 @@
     "url": "https://github.com/coderooz/uaif.git",
     "directory": "packages/adapters/expo"
   },
-  "homepage": "https://github.com/coderooz/uaif#readme",
+  "homepage": "https://coderooz.github.io/uaif/",
   "bugs": {
     "url": "https://github.com/coderooz/uaif/issues"
   },
+  "keywords": [
+    "uaif",
+    "adapter",
+    "expo",
+    "react-native",
+    "mobile",
+    "integration"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

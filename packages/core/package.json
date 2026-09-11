@@ -9,10 +9,20 @@
     "url": "https://github.com/coderooz/uaif.git",
     "directory": "packages/core"
   },
-  "homepage": "https://github.com/coderooz/uaif#readme",
+  "homepage": "https://coderooz.github.io/uaif/",
   "bugs": {
     "url": "https://github.com/coderooz/uaif/issues"
   },
+  "keywords": [
+    "uaif",
+    "integration",
+    "contracts",
+    "registry",
+    "compatibility",
+    "resolver",
+    "provider",
+    "adapter"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

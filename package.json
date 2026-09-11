@@ -9,6 +9,23 @@
     "type": "git",
     "url": "https://github.com/coderooz/uaif.git"
   },
+  "homepage": "https://coderooz.github.io/uaif/",
+  "bugs": {
+    "url": "https://github.com/coderooz/uaif/issues"
+  },
+  "keywords": [
+    "uaif",
+    "integration",
+    "provider",
+    "adapter",
+    "framework",
+    "auth",
+    "clerk",
+    "firebase",
+    "mongodb",
+    "cloudinary",
+    "monorepo"
+  ],
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=9.0.0"
