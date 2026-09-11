@@ -105,6 +105,7 @@ export default defineConfig({
             { text: 'Adding Providers', link: '/guides/adding-providers' },
             { text: 'Creating Adapters', link: '/guides/creating-adapters' },
             { text: 'Integration Manifest', link: '/guides/manifest' },
+            { text: 'Releasing', link: '/guides/releasing' },
           ],
         },
         {

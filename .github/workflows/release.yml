@@ -1,0 +1,270 @@
+name: Release & Publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 0.1.0)'
+        required: true
+        type: string
+      dry-run:
+        description: 'Dry run — validate only, do not publish'
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  validate:
+    name: Pre-publish Validation
+    runs-on: ubuntu-latest
+    if: inputs.dry-run || github.event_name == 'release'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm -r typecheck
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Verify version consistency
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+            # Strip leading v if present
+            EXPECTED_VERSION="${TAG#v}"
+          else
+            EXPECTED_VERSION="${{ inputs.version }}"
+          fi
+
+          ROOT_VERSION=$(jq -r '.version' package.json)
+          echo "Expected: $EXPECTED_VERSION | Root: $ROOT_VERSION"
+
+          if [ "$ROOT_VERSION" != "$EXPECTED_VERSION" ]; then
+            echo "::error::Version mismatch: root package.json is $ROOT_VERSION, expected $EXPECTED_VERSION"
+            exit 1
+          fi
+
+          # Verify all publishable packages match
+          PACKAGES=(
+            "packages/core"
+            "packages/cli"
+            "packages/adapters/clerk"
+            "packages/adapters/firebase-auth"
+            "packages/adapters/mongodb"
+            "packages/adapters/cloudinary"
+            "packages/adapters/react"
+            "packages/adapters/next"
+            "packages/adapters/expo"
+          )
+
+          for pkg in "${PACKAGES[@]}"; do
+            PKG_VERSION=$(jq -r '.version' "$pkg/package.json")
+            if [ "$PKG_VERSION" != "$EXPECTED_VERSION" ]; then
+              echo "::error::Version mismatch: $pkg is $PKG_VERSION, expected $EXPECTED_VERSION"
+              exit 1
+            fi
+          done
+
+          echo "All package versions match: $EXPECTED_VERSION"
+
+      - name: Verify package metadata
+        run: |
+          PACKAGES=(
+            "packages/core"
+            "packages/cli"
+            "packages/adapters/clerk"
+            "packages/adapters/firebase-auth"
+            "packages/adapters/mongodb"
+            "packages/adapters/cloudinary"
+            "packages/adapters/react"
+            "packages/adapters/next"
+            "packages/adapters/expo"
+          )
+
+          for pkg in "${PACKAGES[@]}"; do
+            NAME=$(jq -r '.name' "$pkg/package.json")
+            DESC=$(jq -r '.description // empty' "$pkg/package.json")
+            LICENSE=$(jq -r '.license' "$pkg/package.json")
+            REPO_URL=$(jq -r '.repository.url // empty' "$pkg/package.json")
+            HOMEPAGE=$(jq -r '.homepage // empty' "$pkg/package.json")
+            BUGS=$(jq -r '.bugs.url // empty' "$pkg/package.json")
+
+            [ -z "$NAME" ] && echo "::error::Missing name in $pkg" && exit 1
+            [ -z "$DESC" ] && echo "::error::Missing description in $pkg" && exit 1
+            [ "$LICENSE" != "MIT" ] && echo "::error::License must be MIT in $pkg" && exit 1
+            [ -z "$REPO_URL" ] && echo "::error::Missing repository.url in $pkg" && exit 1
+            [ -z "$HOMEPAGE" ] && echo "::error::Missing homepage in $pkg" && exit 1
+            [ -z "$BUGS" ] && echo "::error::Missing bugs.url in $pkg" && exit 1
+            echo "  $NAME metadata OK"
+          done
+
+      - name: Verify READMEs exist
+        run: |
+          ROOT_FILES="README.md LICENSE"
+          for f in $ROOT_FILES; do
+            [ ! -f "$f" ] && echo "::error::Missing $f" && exit 1
+          done
+
+          PACKAGES=(
+            "packages/core"
+            "packages/cli"
+            "packages/adapters/clerk"
+            "packages/adapters/firebase-auth"
+            "packages/adapters/mongodb"
+            "packages/adapters/cloudinary"
+            "packages/adapters/react"
+            "packages/adapters/next"
+            "packages/adapters/expo"
+          )
+
+          for pkg in "${PACKAGES[@]}"; do
+            [ ! -f "$pkg/README.md" ] && echo "::error::Missing $pkg/README.md" && exit 1
+          done
+
+          echo "All READMEs present"
+
+      - name: npm pack dry-run
+        run: |
+          PACKAGES=(
+            "packages/core"
+            "packages/cli"
+            "packages/adapters/clerk"
+            "packages/adapters/firebase-auth"
+            "packages/adapters/mongodb"
+            "packages/adapters/cloudinary"
+            "packages/adapters/react"
+            "packages/adapters/next"
+            "packages/adapters/expo"
+          )
+
+          for pkg in "${PACKAGES[@]}"; do
+            echo "Packing $pkg..."
+            cd "$pkg"
+            npm pack --dry-run 2>&1 | tail -1
+            cd "$GITHUB_WORKSPACE"
+          done
+
+  publish:
+    name: Publish to npm
+    needs: validate
+    runs-on: ubuntu-latest
+    if: inputs.dry-run != true && github.event_name == 'release'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+
+      - name: Determine version from release tag
+        id: version
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          VERSION="${TAG#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Publishing version: $VERSION"
+
+      - name: Publish @uaif/core
+        run: pnpm --filter @uaif/core publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @uaif/cli
+        run: pnpm --filter @uaif/cli publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish adapters (clerk, firebase-auth, mongodb, cloudinary)
+        run: |
+          pnpm --filter @uaif/adapter-clerk publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-firebase-auth publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-mongodb publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-cloudinary publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish adapters (react, next, expo)
+        run: |
+          pnpm --filter @uaif/adapter-react publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-next publish --access public --no-git-checks
+          pnpm --filter @uaif/adapter-expo publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  verify:
+    name: Post-publish Verification
+    needs: publish
+    runs-on: ubuntu-latest
+    if: always() && needs.publish.result == 'success'
+    steps:
+      - name: Wait for npm propagation
+        run: |
+          echo "Waiting 90 seconds for npm propagation..."
+          sleep 90
+
+      - name: Verify all packages on npm
+        run: |
+          VERSION="${{ needs.publish.outputs.version }}"
+          if [ -z "$VERSION" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          fi
+
+          PACKAGES=(
+            "@uaif/core"
+            "@uaif/cli"
+            "@uaif/adapter-clerk"
+            "@uaif/adapter-firebase-auth"
+            "@uaif/adapter-mongodb"
+            "@uaif/adapter-cloudinary"
+            "@uaif/adapter-react"
+            "@uaif/adapter-next"
+            "@uaif/adapter-expo"
+          )
+
+          FAILED=0
+          for pkg in "${PACKAGES[@]}"; do
+            PUBLISHED=$(npm view "$pkg" version 2>/dev/null || echo "")
+            if [ "$PUBLISHED" = "$VERSION" ]; then
+              echo "  $pkg@$VERSION — published"
+            else
+              echo "::error::$pkg@$VERSION not found on npm (got: ${PUBLISHED:-not found})"
+              FAILED=1
+            fi
+          done
+
+          if [ "$FAILED" -eq 1 ]; then
+            echo "Some packages failed verification"
+            exit 1
+          fi
+
+          echo "All packages verified on npm"

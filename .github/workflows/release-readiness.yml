@@ -1,5 +1,9 @@
 name: Release Readiness
 
+# Pre-release validation tool. Run this before creating a GitHub Release
+# to verify the repository is ready for publication. The actual release
+# workflow is release.yml (triggered by GitHub Releases).
+
 on:
   workflow_dispatch:
     inputs:

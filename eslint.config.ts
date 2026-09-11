@@ -11,8 +11,8 @@ export default tseslint.config(
   // Global ignores
   {
     ignores: [
-      'dist',
-      'build',
+      '**/dist',
+      '**/build',
       'node_modules',
       'coverage',
       '.workspace',
