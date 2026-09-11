@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 64" fill="none">
+  <!-- Symbol -->
+  <circle cx="32" cy="32" r="28" stroke="#0f172a" stroke-width="2.5" fill="none" opacity="0.3"/>
+  <path d="M32 8 C48 8 56 20 56 32 C56 44 48 56 32 56 C16 56 8 44 8 32 C8 20 16 8 32 8" stroke="#0f172a" stroke-width="2" fill="none"/>
+  <circle cx="32" cy="16" r="3.5" fill="#0f172a"/>
+  <circle cx="18" cy="40" r="3.5" fill="#0f172a"/>
+  <circle cx="46" cy="40" r="3.5" fill="#0f172a"/>
+  <line x1="32" y1="16" x2="18" y2="40" stroke="#0f172a" stroke-width="1.2" opacity="0.6"/>
+  <line x1="32" y1="16" x2="46" y2="40" stroke="#0f172a" stroke-width="1.2" opacity="0.6"/>
+  <line x1="18" y1="40" x2="46" y2="40" stroke="#0f172a" stroke-width="1.2" opacity="0.6"/>
+  <circle cx="32" cy="32" r="5" fill="#0f172a"/>
+  <circle cx="32" cy="32" r="2.5" fill="#ffffff"/>
+  <!-- Text -->
+  <text x="72" y="28" font-family="system-ui, sans-serif" font-size="22" font-weight="700" fill="#0f172a">UAIF</text>
+  <text x="72" y="46" font-family="system-ui, sans-serif" font-size="8" fill="#64748b">Universal Application Integration Framework</text>
+</svg>

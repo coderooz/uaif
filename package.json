@@ -26,7 +26,10 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "clean": "pnpm -r clean",
-    "uaif": "pnpm --filter @uaif/cli uaif"
+    "uaif": "pnpm --filter @uaif/cli uaif",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.0.0",
@@ -36,6 +39,7 @@
     "prettier": "^3.4.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.70.0",
+    "vitepress": "^1.6.4",
     "vitest": "^2.1.0"
   }
 }

@@ -1,6 +1,11 @@
+---
+title: Troubleshooting
+description: Common issues and their solutions.
+---
+
 # Troubleshooting
 
-> Common issues and their solutions.
+Common issues and their solutions.
 
 ## Installation Issues
 
@@ -30,149 +35,117 @@ pnpm build
 
 ## CLI Issues
 
-### "Manifest not found" (`uaif validate`)
+### `uaif` command not found
 
-**Cause:** No `uaif.json` in the project root.
-
-**Solution:** Create a manifest:
+**Cause:** CLI not installed or not in PATH.
 
 ```bash
-echo '{"name":"my-project","version":"1.0.0","integrations":{}}' > uaif.json
+# Install CLI
+npm install -g @uaif/cli
+
+# Or use npx
+npx @uaif/cli detect
 ```
 
-### "Provider not registered" (`uaif list`)
+### Detection fails
 
-**Cause:** Provider ID doesn't match any registered provider.
-
-**Solution:** Check available providers:
+**Cause:** Running in wrong directory or missing package.json.
 
 ```bash
-npx uaif list
-```
-
-Common provider IDs: `clerk`, `firebase`, `mongodb`, `cloudinary`, `postgresql`, `s3`.
-
-### Detection returns unexpected project type
-
-**Cause:** Detection relies on `package.json` dependencies.
-
-**Solution:** Ensure your `package.json` lists the correct framework:
-
-```json
-{
-  "dependencies": {
-    "next": "^14.0.0",
-    "react": "^18.2.0"
-  }
-}
+# Ensure you're in the project root
+cd /path/to/your/project
+npx uaif detect --dir .
 ```
 
 ---
 
 ## Adapter Issues
 
-### "Secret key required for login" (Clerk)
+### Peer dependency warnings
 
-**Cause:** Calling server-only methods without providing `secretKey`.
+**Cause:** Adapter requires specific peer dependencies.
 
-**Solution:** Pass `secretKey` in adapter config:
-
-```typescript
-const auth = createClerkAdapter({
-  publishableKey: 'pk_...',
-  secretKey: 'sk_...', // Required for server-side operations
-});
+```bash
+# Install peer dependencies
+npm install @clerk/clerk-react react
 ```
 
-**Alternative:** Use the Clerk client-side SDK directly for browser operations.
+### Provider not compatible
 
-### "Not authenticated" (Firebase Auth)
+**Cause:** Provider doesn't support your framework/runtime combination.
 
-**Cause:** Calling methods that require an active session.
+```bash
+# Check compatibility
+npx uaif validate
 
-**Solution:** Call `login()` or `register()` first:
-
-```typescript
-await auth.login({ email: 'user@example.com', password: 'pass' });
-const user = await auth.getCurrentUser(); // Now works
-```
-
-### "Database not connected" (MongoDB)
-
-**Cause:** Calling query methods before `connect()`.
-
-**Solution:** Connect first:
-
-```typescript
-const db = createMongoDBAdapter({ connectionString: '...', database: 'mydb', collection: 'users' });
-await db.connect();
-const results = await db.find();
-```
-
-### "Unsupported content type" (Cloudinary)
-
-**Cause:** Passing a string or non-Buffer/Blob content to `upload()`.
-
-**Solution:** Use `Buffer` or `Blob`:
-
-```typescript
-// Buffer
-const buffer = Buffer.from(fileContent);
-await storage.upload({ content: buffer, name: 'photo.jpg', mimeType: 'image/jpeg' });
-
-// Blob
-const blob = new Blob([fileContent], { type: 'image/jpeg' });
-await storage.upload({ content: blob, name: 'photo.jpg', mimeType: 'image/jpeg' });
+# List available providers
+npx uaif list --segment auth
 ```
 
 ---
 
 ## Build Issues
 
-### pnpm workspace errors
+### Build fails with type errors
 
-**Cause:** Workspace protocol (`workspace:*`) not resolved.
+**Cause:** Stale TypeScript build cache.
 
 ```bash
-# Reinstall from root
-pnpm install
+# Clean everything
+pnpm clean
+
+# Remove build caches
+rm -rf packages/*/dist
+rm -rf packages/*/tsconfig.tsbuildinfo
+
+# Rebuild
+pnpm build
 ```
 
-### "outDir must be set" in tsconfig
+### Tests fail after changes
 
-**Cause:** Missing `outDir` in adapter tsconfig.
+**Cause:** Test files not rebuilt or stale snapshots.
 
-Ensure each adapter has:
+```bash
+# Run tests with fresh build
+pnpm clean && pnpm build && pnpm test
 
-```json
-{
-  "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src"
-  }
-}
+# Update snapshots if needed
+pnpm test -- --update
 ```
 
 ---
 
-## Phantom LSP Errors
+## Integration Issues
 
-### Errors from deleted `registry/` directory
+### Manifest validation fails
 
-**Cause:** Editor/IDE LSP cache references deleted files.
+**Cause:** `uaif.json` references a provider that isn't compatible.
 
-**Solution:** The `registry/` directory was consolidated into `packages/core/src/registry/` in Phase 2. These errors are phantom — they don't affect the build or tests.
+```bash
+# Check manifest
+npx uaif validate
 
-To clear LSP cache:
+# List available providers
+npx uaif list
+```
 
-- VS Code: `Ctrl+Shift+P` → "TypeScript: Restart TS Server"
-- JetBrains: File → Invalidate Caches / Restart
+### Resolver can't find adapter
+
+**Cause:** Adapter package not installed.
+
+```bash
+# Install the adapter
+npm install @uaif/adapter-clerk
+
+# Verify installation
+npm ls @uaif/adapter-clerk
+```
 
 ---
 
 ## Getting Help
 
-- Check [API Reference](./API_REFERENCE.md) for type signatures
-- Review [Architecture](./architecture/ARCHITECTURE.md) for system design
-- Read [Adding Providers](./guides/ADDING_PROVIDERS.md) for provider setup
-- Open an issue at https://github.com/coderooz/uaif/issues
+- [GitHub Issues](https://github.com/coderooz/uaif/issues) — Report bugs
+- [Discussions](https://github.com/coderooz/uaif/discussions) — Ask questions
+- [Documentation](/) — Read the docs

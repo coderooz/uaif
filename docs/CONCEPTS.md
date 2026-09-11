@@ -1,6 +1,11 @@
-# Concepts
+---
+title: Core Concepts
+description: Core architectural ideas behind UAIF.
+---
 
-> Core architectural ideas behind UAIF.
+# Core Concepts
+
+Core architectural ideas behind UAIF.
 
 ## Overview
 
@@ -9,8 +14,6 @@ UAIF is a **provider-agnostic integration framework**. Application code depends 
 ```
 Your App  →  Contract Interface  →  Adapter  →  Provider SDK  →  Cloud Service
 ```
-
----
 
 ## Contracts
 
@@ -51,311 +54,96 @@ interface AuthContract extends Contract<LoginInput, AuthResult> {
 }
 ```
 
-Application code imports the contract type, never the adapter directly:
-
-```typescript
-import type { AuthContract } from '@uaif/core';
-
-function ProtectedPage({ auth }: { auth: AuthContract }) {
-  // Use auth.login(), auth.getCurrentUser(), etc.
-}
-```
-
----
-
-## Segments
-
-A **segment** is a category of integration. Each segment groups providers that solve the same problem.
-
-### Current Segments
-
-| Segment     | Purpose                        | Example Providers                |
-| ----------- | ------------------------------ | -------------------------------- |
-| `auth`      | Authentication & authorization | Clerk, Firebase Auth, Supabase   |
-| `database`  | Data persistence               | MongoDB, PostgreSQL, Supabase    |
-| `storage`   | File storage & delivery        | Cloudinary, S3, Firebase Storage |
-| `payments`  | Payment processing             | Stripe, Razorpay                 |
-| `email`     | Transactional email            | Resend, SendGrid                 |
-| `analytics` | Usage tracking                 | Mixpanel, PostHog                |
-| `messaging` | Push/real-time messaging       | Firebase Cloud Messaging, Twilio |
-| `search`    | Full-text search               | Algolia, Meilisearch             |
-
-### Integration Segments Type
-
-```typescript
-type IntegrationSegment =
-  'auth' | 'database' | 'storage' | 'payments' | 'email' | 'analytics' | 'messaging' | 'search';
-```
-
----
-
 ## Providers
 
-A **provider** is a specific third-party service registered in the UAIF registry.
+A **provider** is a third-party service registered in the UAIF provider registry. Each provider declares:
 
-### Provider Definition
+- What segment it belongs to (auth, database, storage)
+- What SDK it wraps
+- What contexts it supports (web, mobile, server)
+- What capabilities it provides
 
-```typescript
-interface ProviderDefinition {
-  identity: {
-    id: string; // e.g., "clerk"
-    name: string; // e.g., "Clerk"
-    description: string;
-    website?: string;
-    docs?: string;
-  };
-  segment: IntegrationSegment;
-  state: ProviderState;
-  targets: string[]; // e.g., ["nextjs", "react", "expo"]
-  runtime: {
-    browser: boolean;
-    node: boolean;
-    'react-native': boolean;
-  };
-  capabilities: string[];
-  compatibility: ProviderCompatibilityEntry[];
-  packages?: Record<string, string[]>;
-  requirements?: Record<string, string>;
-}
-```
+### Registered Providers
 
-### Provider Lifecycle States
+| Provider      | Segment  | SDK                  | Contexts               |
+| ------------- | -------- | -------------------- | ---------------------- |
+| Clerk         | Auth     | `@clerk/clerk-react` | web, mobile            |
+| Firebase Auth | Auth     | `firebase/auth`      | web, mobile, server    |
+| MongoDB       | Database | `mongodb`            | server                 |
+| Cloudinary    | Storage  | `cloudinary`         | web, server            |
+| PostgreSQL    | Database | `pg`                 | server (registry-only) |
+| S3            | Storage  | `@aws-sdk/client-s3` | server (registry-only) |
 
-Providers progress through a lifecycle:
-
-```
-experimental → supported → stable → deprecated → unsupported → removed
-```
-
-| State          | Meaning                           |
-| -------------- | --------------------------------- |
-| `experimental` | Under development, API may change |
-| `supported`    | Functional, recommended for use   |
-| `stable`       | Battle-tested, production-ready   |
-| `deprecated`   | Still works, but will be removed  |
-| `unsupported`  | No longer maintained              |
-| `removed`      | Definition removed from registry  |
-
-### Provider Identity
-
-The `identity` field contains the canonical metadata:
-
-```typescript
-identity: {
-  id: 'clerk',              // Machine-readable identifier
-  name: 'Clerk',            // Human-readable name
-  description: '...',
-  website: 'https://clerk.com',
-  docs: 'https://clerk.com/docs',
-}
-```
-
-Note: `ProviderIdentity` does **not** have a `category` field. The segment is defined at the `ProviderDefinition` level.
-
----
+::: warning Registry-Only Providers
+PostgreSQL and S3 are registered in the provider registry but have no installable adapter packages. They are available for future adapter development.
+:::
 
 ## Adapters
 
-An **adapter** is an npm package that implements a contract for a specific provider.
+An **adapter** implements UAIF contracts for a specific provider and framework. Adapters bridge the gap between abstract contracts and concrete SDK calls.
 
-### Adapter Structure
+### Adapter Types
 
-```
-packages/adapters/clerk/
-├── package.json          # @uaif/adapter-clerk
-├── src/
-│   └── index.ts          # ClerkAuthAdapter implements AuthContract
-└── README.md
-```
+| Type              | Purpose                                       |
+| ----------------- | --------------------------------------------- |
+| Framework Adapter | Integrates UAIF with React/Next.js/Expo       |
+| Provider Adapter  | Implements a contract for a specific provider |
 
-### Naming Conventions
+### Available Adapters
 
-| Component        | Convention                   |
-| ---------------- | ---------------------------- |
-| Package name     | `@uaif/adapter-<provider>`   |
-| Class name       | `<Provider><Segment>Adapter` |
-| Factory function | `create<Provider>Adapter()`  |
-| Config interface | `<Provider>AdapterConfig`    |
+| Package                       | Type      | Status    |
+| ----------------------------- | --------- | --------- |
+| `@uaif/adapter-react`         | Framework | Available |
+| `@uaif/adapter-next`          | Framework | Available |
+| `@uaif/adapter-expo`          | Framework | Available |
+| `@uaif/adapter-clerk`         | Provider  | Available |
+| `@uaif/adapter-firebase-auth` | Provider  | Available |
+| `@uaif/adapter-mongodb`       | Provider  | Available |
+| `@uaif/adapter-cloudinary`    | Provider  | Available |
 
-### Example: Clerk Adapter
+## Compatibility
 
-```typescript
-import type { AuthContract, UAIFUser, AuthResult, ContractMetadata } from '@uaif/core';
+UAIF maintains explicit compatibility status for each provider-target combination:
 
-export class ClerkAuthAdapter implements AuthContract {
-  readonly metadata: ContractMetadata = {
-    id: 'clerk',
-    version: '0.1.0',
-    segment: 'auth',
-    description: 'Clerk authentication adapter for UAIF',
-    contexts: ['client-component', 'server-component', 'route-handler'],
-  };
-
-  readonly portable = true;
-
-  async login(input: LoginInput): Promise<AuthResult> {
-    // Implementation using Clerk SDK
-  }
-
-  // ... other AuthContract methods
-}
-```
-
-### Security Model
-
-Adapters enforce context restrictions:
-
-- **Client-only methods** — Use `publishableKey` (safe for browser)
-- **Server-only methods** — Require `secretKey` (must be server-side)
-
-```typescript
-async login(input: LoginInput): Promise<AuthResult> {
-  if (!this.config.secretKey) {
-    return { success: false, error: 'Secret key required. Use server-side context.' };
-  }
-  // ... server-side implementation
-}
-```
-
----
-
-## Detection
-
-The detection module identifies your project environment:
-
-```typescript
-interface ProjectProfile {
-  project: { type: ProjectType; version: string };
-  runtime: { name: RuntimeName; version: string; targets: Platform[] };
-  language: { name: string; version: string };
-  react?: { version: string };
-  packageManager: { name: string; version: string };
-  platform: { web: boolean; native: boolean; desktop: boolean };
-}
-```
-
-### Detection Types
-
-```typescript
-type ProjectType = 'nextjs' | 'react' | 'expo' | 'react-native' | 'vite' | 'remix' | 'node';
-type RuntimeName = 'node' | 'browser' | 'react-native' | 'deno' | 'bun';
-```
-
-Detection reads:
-
-- `package.json` dependencies
-- Lock files (pnpm-lock.yaml, package-lock.json, yarn.lock)
-- Configuration files (next.config.js, vite.config.ts, etc.)
-
----
-
-## Compatibility Engine
-
-The compatibility engine determines if a provider works with your project:
-
-### Resolution Flow
-
-```
-1. Detect project profile
-2. Look up provider in registry
-3. Find compatibility entry for target
-4. Compare versions
-5. Return CompatibilityResult
-```
-
-### Compatibility Status
-
-```typescript
-type CompatibilityStatus =
-  | 'SUPPORTED' // Works fully
-  | 'SUPPORTED_WITH_WARNINGS' // Works with caveats
-  | 'PARTIALLY_SUPPORTED' // Some features missing
-  | 'MIGRATION_REQUIRED' // Needs migration steps
-  | 'UNSUPPORTED' // No compatibility entry
-  | 'INCOMPATIBLE' // Confirmed incompatible
-  | 'UNKNOWN'; // Cannot determine
-```
-
-### Risk Levels
-
-```typescript
-riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-```
-
----
+| Status                    | Description                      |
+| ------------------------- | -------------------------------- |
+| `SUPPORTED`               | Fully supported, tested          |
+| `SUPPORTED_WITH_WARNINGS` | Supported with known limitations |
+| `PARTIALLY_SUPPORTED`     | Some features may not work       |
+| `MIGRATION_REQUIRED`      | Requires migration steps         |
+| `UNSUPPORTED`             | Not supported for this target    |
+| `INCOMPATIBLE`            | Cannot be used with this target  |
 
 ## Resolver
 
-The resolver combines compatibility data with provider recommendations:
+The resolver determines which provider adapter to use based on:
 
-```typescript
-interface ResolutionResult {
-  compatible: boolean;
-  status: CompatibilityStatus;
-  recommendation: string;
-  compatibility: CompatibilityResult;
-  migrationRequired: boolean;
-  migrationSteps: string[];
-  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
-}
-```
-
----
-
-## Manifest
-
-The integration manifest (`uaif.json`) tracks which providers are configured:
-
-```json
-{
-  "name": "my-project",
-  "version": "1.0.0",
-  "integrations": {
-    "auth": { "provider": "clerk" },
-    "database": { "provider": "mongodb" },
-    "storage": { "provider": "cloudinary" }
-  }
-}
-```
-
-See [Manifest Guide](./guides/MANIFEST.md) for details.
-
----
-
-## Registry
-
-The registry is the central database of provider definitions. It supports:
-
-- **Registration** — Add providers at startup
-- **Lookup** — Find providers by segment, target, or state
-- **Filtering** — Query by compatibility status
-- **Built-in data** — Ships with 6 provider definitions
-
-### Built-in Providers
-
-| Provider      | Segment  | State         |
-| ------------- | -------- | ------------- |
-| Clerk         | Auth     | Supported     |
-| Firebase Auth | Auth     | Supported     |
-| MongoDB       | Database | Supported     |
-| PostgreSQL    | Database | Registry Only |
-| Cloudinary    | Storage  | Supported     |
-| S3            | Storage  | Registry Only |
-
-PostgreSQL and S3 are **registry-only** — they have provider definitions but no adapter packages.
-
----
-
-## Package Architecture
+1. The integration manifest configuration
+2. The project environment (detected by the CLI)
+3. Provider compatibility with the current target
+4. Version constraints and peer dependencies
 
 ```
-@uaif/core (zero dependencies)
-    ↑
-@uaif/cli → @uaif/core
-    ↑
-@uaif/adapter-* → @uaif/core
+Desired State (uaif.json)
+    ↓
+Resolver
+    ↓
+Provider Selection
+    ↓
+Adapter Instantiation
+    ↓
+Ready to Use
 ```
 
-- `@uaif/core` — Types, contracts, registry, compatibility engine, resolver, detection, manifest
-- `@uaif/cli` — Command-line interface (detect, list, validate)
-- `@uaif/adapter-*` — Provider-specific implementations
+## Integration Segments
+
+| Segment         | Description                      |
+| --------------- | -------------------------------- |
+| `auth`          | Authentication and authorization |
+| `database`      | Data persistence and querying    |
+| `storage`       | File storage and management      |
+| `payments`      | Payment processing               |
+| `notifications` | Push and email notifications     |
+| `analytics`     | Usage analytics and tracking     |
+| `search`        | Full-text search                 |
+| `ai`            | AI/ML integrations               |
