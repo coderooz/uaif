@@ -9,9 +9,11 @@ UAIF uses GitHub Releases to trigger automated npm publication. The release work
 
 ## Prerequisites
 
-1. **npm scope**: The `@uaif` scope must be created on [npmjs.com](https://www.npmjs.com/)
+1. **npm organization**: Create the `uaif` organization on [npmjs.com](https://www.npmjs.com/) (Settings → Organizations)
 2. **NPM_TOKEN**: A Classic Automation token with publish permission must be added as a repository secret (`Settings → Secrets → Actions → NPM_TOKEN`)
 3. **CI must pass**: The `main` branch should have a green CI status before releasing
+
+> **npm Trusted Publishing (OIDC)**: Not currently configured. The workflow uses `NPM_TOKEN` authentication, which is simpler for a solo-developer monorepo. Trusted Publishing requires per-package configuration on npm (9 separate configurations) and is better suited for larger teams. If you want to migrate to OIDC later, npm supports it for public GitHub repositories — add `id-token: write` to the workflow permissions.
 
 ## Release Process
 
@@ -67,15 +69,10 @@ Add a new section to `CHANGELOG.md` following [Keep a Changelog](https://keepach
 ### 4. Create a Git Release
 
 ```bash
-git tag -a vX.Y.Z -m "Release vX.Y.Z"
-git push origin vX.Y.Z
+gh release create v0.1.0 --title "v0.1.0" --notes "Release notes here"
 ```
 
-Then create a GitHub Release from the tag:
-
-```bash
-gh release create vX.Y.Z --title "vX.Y.Z" --notes "Release notes here"
-```
+This creates both the Git tag and GitHub Release in one step.
 
 ### 5. Automated Publication
 
