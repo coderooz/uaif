@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'UAIF',
   description:
     'Universal Application Integration Framework — Provider-independent integration layer for modern applications',
+  base: '/uaif/',
   ignoreDeadLinks: true,
 
   head: [
