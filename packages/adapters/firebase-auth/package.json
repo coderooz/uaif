@@ -43,7 +43,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "firebase": "^11.0.0",
+    "firebase": "^12.18.0",
     "@uaif/core": "workspace:*"
   },
   "devDependencies": {
