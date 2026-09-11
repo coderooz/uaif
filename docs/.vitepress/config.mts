@@ -12,7 +12,10 @@ export default defineConfig({
     ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' }],
     ['meta', { name: 'theme-color', content: '#0f172a' }],
     ['meta', { property: 'og:type', content: 'website' }],
-    ['meta', { property: 'og:title', content: 'UAIF — Universal Application Integration Framework' }],
+    [
+      'meta',
+      { property: 'og:title', content: 'UAIF — Universal Application Integration Framework' },
+    ],
     [
       'meta',
       {
@@ -24,7 +27,10 @@ export default defineConfig({
     ['meta', { property: 'og:image', content: '/og/uaif-og.png' }],
     ['meta', { property: 'og:url', content: 'https://uaif.dev' }],
     ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-    ['meta', { name: 'twitter:title', content: 'UAIF — Universal Application Integration Framework' }],
+    [
+      'meta',
+      { name: 'twitter:title', content: 'UAIF — Universal Application Integration Framework' },
+    ],
     [
       'meta',
       {
@@ -49,7 +55,11 @@ export default defineConfig({
     siteTitle: 'UAIF',
 
     nav: [
-      { text: 'Guide', link: '/getting-started', activeMatch: '/getting-started|/concepts|/architecture' },
+      {
+        text: 'Guide',
+        link: '/getting-started',
+        activeMatch: '/getting-started|/concepts|/architecture',
+      },
       { text: 'CLI', link: '/cli/', activeMatch: '/cli/' },
       { text: 'Providers', link: '/providers/', activeMatch: '/providers/' },
       { text: 'API', link: '/api/', activeMatch: '/api/' },
@@ -128,9 +138,7 @@ export default defineConfig({
       ],
     },
 
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/coderooz/uaif' },
-    ],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/coderooz/uaif' }],
 
     editLink: {
       pattern: 'https://github.com/coderooz/uaif/edit/main/docs/:path',

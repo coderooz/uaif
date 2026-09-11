@@ -78,9 +78,11 @@ This creates both the Git tag and GitHub Release in one step.
 
 Once the GitHub Release is published, the `release.yml` workflow runs automatically:
 
-1. **Validation** — Lint, typecheck, format, build, test, version consistency, metadata, READMEs, npm pack dry-run
-2. **Publish** — Publishes `@uaif/core` first, then `@uaif/cli`, then all 7 adapters
-3. **Verify** — Waits 90s for npm propagation, then verifies all packages are available
+1. **Validation** — Lint, typecheck, format, build, test, version consistency, metadata, READMEs, npm pack dry-run. Builds from the exact tagged commit.
+2. **Publish** — Publishes `@uaif/core` first (dependency root), then `@uaif/cli`, then all 7 adapters
+3. **Verify** — Bounded-retry npm availability check (6 attempts, 30s intervals) plus workspace dependency resolution validation
+
+The workflow also writes a GitHub Actions job summary with publication status and npm links for each package.
 
 ### 6. Post-release
 
@@ -115,7 +117,11 @@ Verify `NPM_TOKEN` is set in repository secrets and is a Classic Automation toke
 
 ### Packages not appearing on npm
 
-npm propagation can take up to 5 minutes. The verification step waits 90 seconds. If packages still don't appear, check the [npm status page](https://status.npmjs.org/).
+npm propagation can take up to 5 minutes. The verification step uses bounded retries (6 attempts, 30s intervals = up to 3 minutes). If packages still don't appear after all retries, check the [npm status page](https://status.npmjs.org/).
+
+### workflow_dispatch behavior
+
+The `workflow_dispatch` trigger only runs in dry-run mode — it validates but does NOT publish. This is a safety guardrail: accidental manual dispatches cannot publish to npm. To publish, always create a GitHub Release instead.
 
 ### Dry run failed but I want to publish anyway
 

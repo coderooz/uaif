@@ -1,3 +1,24 @@
+# ============================================================
+# release.yml — Authoritative production release workflow
+# ============================================================
+#
+# TRIGGER: Only via GitHub Releases (release:published).
+# All other workflows explicitly skip npm publication.
+#
+# PIPELINE:
+#   1. validate  — Lint, typecheck, format, build, test,
+#                   version consistency, metadata, READMEs,
+#                   npm pack dry-run
+#   2. publish   — Publish @uaif/core first (dependency root),
+#                   then @uaif/cli, then all 7 adapters
+#   3. verify    — Bounded-retry npm availability check for
+#                   all 9 packages, plus workspace:* validation
+#
+# AUTH: NPM_TOKEN (Classic Automation) — NOT OIDC/Trusted Publishing.
+# CONCURRENCY: Single release at a time (group: release).
+# CONTENTS: Minimal permissions (read-only).
+# ============================================================
+
 name: Release & Publish
 
 on:
@@ -6,14 +27,14 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g., 0.1.0)'
+        description: 'Version to validate (e.g., 0.1.0). For release events this is auto-derived from the tag.'
         required: true
         type: string
       dry-run:
-        description: 'Dry run — validate only, do not publish'
+        description: 'Dry run — validate only, do NOT publish'
         required: false
         type: boolean
-        default: false
+        default: true
 
 permissions:
   contents: read
@@ -23,12 +44,21 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # ────────────────────────────────────────────────────────────
+  # Job 1: Pre-publish Validation
+  # ────────────────────────────────────────────────────────────
   validate:
     name: Pre-publish Validation
     runs-on: ubuntu-latest
-    if: inputs.dry-run || github.event_name == 'release'
+    if: >-
+      inputs.dry-run == true
+      || github.event_name == 'release'
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || '' }}
+
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -36,34 +66,42 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
-      - run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
+        id: lint
         run: pnpm lint
 
       - name: Type check
+        id: typecheck
         run: pnpm -r typecheck
 
       - name: Format check
+        id: format
         run: pnpm format:check
 
       - name: Build all packages
+        id: build
         run: pnpm build
 
       - name: Run tests
+        id: test
         run: pnpm test
 
       - name: Verify version consistency
+        id: version-check
         run: |
           if [ "${{ github.event_name }}" = "release" ]; then
             TAG="${{ github.event.release.tag_name }}"
-            # Strip leading v if present
             EXPECTED_VERSION="${TAG#v}"
           else
             EXPECTED_VERSION="${{ inputs.version }}"
           fi
 
           ROOT_VERSION=$(jq -r '.version' package.json)
+          echo "expected=$EXPECTED_VERSION" >> "$GITHUB_OUTPUT"
+          echo "root_version=$ROOT_VERSION" >> "$GITHUB_OUTPUT"
           echo "Expected: $EXPECTED_VERSION | Root: $ROOT_VERSION"
 
           if [ "$ROOT_VERSION" != "$EXPECTED_VERSION" ]; then
@@ -71,7 +109,6 @@ jobs:
             exit 1
           fi
 
-          # Verify all publishable packages match
           PACKAGES=(
             "packages/core"
             "packages/cli"
@@ -171,13 +208,52 @@ jobs:
             cd "$GITHUB_WORKSPACE"
           done
 
+      - name: Write job summary
+        if: always()
+        run: |
+          echo "## Pre-publish Validation" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "${{ steps.version-check.outcome }}" = "failure" ]; then
+            echo "**Status:** ❌ Failed (version mismatch)" >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ job.status }}" = "success" ]; then
+            echo "**Status:** ✅ All checks passed" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "**Status:** ❌ Failed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Check | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Lint | ${{ steps.lint.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Type check | ${{ steps.typecheck.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Format | ${{ steps.format.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Build | ${{ steps.build.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Tests | ${{ steps.test.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Versions | ${{ steps.version-check.outcome == 'success' && '✅' || '❌' }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          VERSION="${{ steps.version-check.outputs.expected || inputs.version }}"
+          echo "**Target version:** \`$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Packages:** 9" >> "$GITHUB_STEP_SUMMARY"
+
+  # ────────────────────────────────────────────────────────────
+  # Job 2: Publish to npm
+  # ────────────────────────────────────────────────────────────
   publish:
     name: Publish to npm
     needs: validate
     runs-on: ubuntu-latest
-    if: inputs.dry-run != true && github.event_name == 'release'
+    if: >-
+      github.event_name == 'release'
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout release commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -185,8 +261,11 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
 
       - name: Determine version from release tag
         id: version
@@ -223,21 +302,49 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Write job summary
+        if: always()
+        run: |
+          echo "## Publish to npm" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          VERSION="${{ steps.version.outputs.version }}"
+
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "**Status:** ✅ All 9 packages published" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "**Status:** ❌ Publication failed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Version:** \`$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Package | Status |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/core | Published |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/cli | Published |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-clerk | Published |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-firebase-auth | Published |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-mongodb | Published |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-cloudinary | Published |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-react | Published |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-next | Published |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-expo | Published |" >> "$GITHUB_STEP_SUMMARY"
+
+  # ────────────────────────────────────────────────────────────
+  # Job 3: Post-publish Verification
+  # ────────────────────────────────────────────────────────────
   verify:
     name: Post-publish Verification
     needs: publish
     runs-on: ubuntu-latest
     if: always() && needs.publish.result == 'success'
     steps:
-      - name: Wait for npm propagation
-        run: |
-          echo "Waiting 90 seconds for npm propagation..."
-          sleep 90
-
       - name: Verify all packages on npm
+        id: verify
         run: |
-          TAG="${{ github.event.release.tag_name }}"
-          VERSION="${TAG#v}"
+          VERSION="${{ needs.publish.outputs.version }}"
+          MAX_RETRIES=6
+          RETRY_DELAY=30
 
           PACKAGES=(
             "@uaif/core"
@@ -251,20 +358,108 @@ jobs:
             "@uaif/adapter-expo"
           )
 
-          FAILED=0
-          for pkg in "${PACKAGES[@]}"; do
-            PUBLISHED=$(npm view "$pkg" version 2>/dev/null || echo "")
-            if [ "$PUBLISHED" = "$VERSION" ]; then
-              echo "  $pkg@$VERSION — published"
-            else
-              echo "::error::$pkg@$VERSION not found on npm (got: ${PUBLISHED:-not found})"
-              FAILED=1
+          echo "Verifying $VERSION on npm (max $MAX_RETRIES attempts, ${RETRY_DELAY}s between)..."
+
+          ALL_PUBLISHED=0
+          for attempt in $(seq 1 $MAX_RETRIES); do
+            echo "Attempt $attempt/$MAX_RETRIES..."
+            ALL_PUBLISHED=1
+            FAILED_PACKAGES=""
+
+            for pkg in "${PACKAGES[@]}"; do
+              PUBLISHED=$(npm view "$pkg" version 2>/dev/null || echo "")
+              if [ "$PUBLISHED" = "$VERSION" ]; then
+                echo "  $pkg@$VERSION — available"
+              else
+                echo "  $pkg@$VERSION — NOT YET (got: ${PUBLISHED:-not found})"
+                ALL_PUBLISHED=0
+                FAILED_PACKAGES="$FAILED_PACKAGES $pkg"
+              fi
+            done
+
+            if [ "$ALL_PUBLISHED" -eq 1 ]; then
+              echo "All packages verified on attempt $attempt"
+              break
+            fi
+
+            if [ "$attempt" -lt "$MAX_RETRIES" ]; then
+              echo "Waiting ${RETRY_DELAY}s before retry..."
+              sleep $RETRY_DELAY
             fi
           done
 
-          if [ "$FAILED" -eq 1 ]; then
-            echo "Some packages failed verification"
+          if [ "$ALL_PUBLISHED" -ne 1 ]; then
+            echo "::error::Packages not found after $MAX_RETRIES attempts:$FAILED_PACKAGES"
             exit 1
           fi
 
-          echo "All packages verified on npm"
+          echo "verified=true" >> "$GITHUB_OUTPUT"
+
+      - name: Validate workspace dependency resolution
+        run: |
+          VERSION="${{ needs.publish.outputs.version }}"
+
+          echo "Checking workspace:* dependencies are replaced with version numbers..."
+          ISSUES=0
+
+          # Check @uaif/core dependency in @uaif/cli
+          CLI_CORE_DEP=$(npm view @uaif/cli dependencies.@uaif/core 2>/dev/null || echo "NOT_FOUND")
+          if [ "$CLI_CORE_DEP" = "$VERSION" ]; then
+            echo "  @uaif/cli → @uaif/core: $CLI_CORE_DEP ✅"
+          else
+            echo "  @uaif/cli → @uaif/core: expected $VERSION, got $CLI_CORE_DEP ❌"
+            ISSUES=1
+          fi
+
+          # Check @uaif/core dependency in each adapter
+          ADAPTERS=(
+            "adapter-clerk"
+            "adapter-firebase-auth"
+            "adapter-mongodb"
+            "adapter-cloudinary"
+            "adapter-react"
+            "adapter-next"
+            "adapter-expo"
+          )
+
+          for adapter in "${ADAPTERS[@]}"; do
+            CORE_DEP=$(npm view "@uaif/$adapter".dependencies.@uaif/core 2>/dev/null || echo "NOT_FOUND")
+            if [ "$CORE_DEP" = "$VERSION" ]; then
+              echo "  @uaif/$adapter → @uaif/core: $CORE_DEP ✅"
+            else
+              echo "  @uaif/$adapter → @uaif/core: expected $VERSION, got $CORE_DEP ❌"
+              ISSUES=1
+            fi
+          done
+
+          if [ "$ISSUES" -eq 1 ]; then
+            echo "::warning::Some workspace:* dependencies were not resolved correctly"
+          fi
+
+      - name: Write job summary
+        if: always()
+        run: |
+          VERSION="${{ needs.publish.outputs.version }}"
+          echo "## Post-publish Verification" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "${{ steps.verify.outcome }}" = "success" ]; then
+            echo "**Status:** ✅ All packages verified on npm" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "**Status:** ❌ Verification failed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Version:** \`$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Package | npm link |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---------|----------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/core | [npmjs.com](https://www.npmjs.com/package/@uaif/core/v/$VERSION) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/cli | [npmjs.com](https://www.npmjs.com/package/@uaif/cli/v/$VERSION) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-clerk | [npmjs.com](https://www.npmjs.com/package/@uaif/adapter-clerk/v/$VERSION) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-firebase-auth | [npmjs.com](https://www.npmjs.com/package/@uaif/adapter-firebase-auth/v/$VERSION) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-mongodb | [npmjs.com](https://www.npmjs.com/package/@uaif/adapter-mongodb/v/$VERSION) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-cloudinary | [npmjs.com](https://www.npmjs.com/package/@uaif/adapter-cloudinary/v/$VERSION) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-react | [npmjs.com](https://www.npmjs.com/package/@uaif/adapter-react/v/$VERSION) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-next | [npmjs.com](https://www.npmjs.com/package/@uaif/adapter-next/v/$VERSION) |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-expo | [npmjs.com](https://www.npmjs.com/package/@uaif/adapter-expo/v/$VERSION) |" >> "$GITHUB_STEP_SUMMARY"
