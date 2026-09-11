@@ -9,8 +9,9 @@
 #   1. validate  — Lint, typecheck, format, build, test,
 #                   version consistency, metadata, READMEs,
 #                   npm pack dry-run
-#   2. publish   — Publish @uaif/core first (dependency root),
-#                   then @uaif/cli, then all 7 adapters
+#   2. publish   — Check existing, publish @uaif/core first
+#                   (dependency root), then @uaif/cli, then
+#                   all 7 adapters. Track per-package results.
 #   3. verify    — Bounded-retry npm availability check for
 #                   all 9 packages, plus workspace:* validation
 #
@@ -248,6 +249,7 @@ jobs:
       github.event_name == 'release'
     outputs:
       version: ${{ steps.version.outputs.version }}
+      results: ${{ steps.publish-results.outputs.results }}
     steps:
       - name: Checkout release commit
         uses: actions/checkout@v4
@@ -275,60 +277,355 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Publishing version: $VERSION"
 
+      - name: Check existing versions on npm
+        id: check-existing
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          echo "Checking which packages already exist on npm..."
+
+          PACKAGES=(
+            "uaif/core"
+            "uaif/cli"
+            "uaif/adapter-clerk"
+            "uaif/adapter-firebase-auth"
+            "uaif/adapter-mongodb"
+            "uaif/adapter-cloudinary"
+            "uaif/adapter-react"
+            "uaif/adapter-next"
+            "uaif/adapter-expo"
+          )
+
+          ALREADY_PUBLISHABLE=""
+          NOT_PUBLISHABLE=""
+
+          for pkg in "${PACKAGES[@]}"; do
+            EXISTING=$(npm view "@$pkg" version 2>/dev/null || echo "")
+            if [ "$EXISTING" = "$VERSION" ]; then
+              echo "  @$pkg@$VERSION — already published"
+              ALREADY_PUBLISHABLE="$ALREADY_PUBLISHABLE $pkg"
+            elif [ -n "$EXISTING" ]; then
+              echo "  @$pkg — different version exists: $EXISTING (will attempt publish)"
+            else
+              echo "  @$pkg — not yet published (will publish)"
+            fi
+          done
+
+          echo "already=$ALREADY_PUBLISHABLE" >> "$GITHUB_OUTPUT"
+
       - name: Publish @uaif/core
-        run: pnpm --filter @uaif/core publish --access public --no-git-checks
+        id: publish-core
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # Skip if already published
+          if echo "${{ steps.check-existing.outputs.already }}" | grep -q "uaif/core"; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            echo "reason=already_published" >> "$GITHUB_OUTPUT"
+            echo "@uaif/core@$VERSION already published — skipping"
+            exit 0
+          fi
+
+          if pnpm --filter @uaif/core publish --access public --no-git-checks; then
+            echo "status=published" >> "$GITHUB_OUTPUT"
+            echo "reason=" >> "$GITHUB_OUTPUT"
+            echo "@uaif/core@$VERSION published"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "reason=publish_error" >> "$GITHUB_OUTPUT"
+            echo "@uaif/core@$VERSION publish failed"
+            exit 1
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @uaif/cli
-        run: pnpm --filter @uaif/cli publish --access public --no-git-checks
+        id: publish-cli
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if echo "${{ steps.check-existing.outputs.already }}" | grep -q "uaif/cli"; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            echo "reason=already_published" >> "$GITHUB_OUTPUT"
+            echo "@uaif/cli@$VERSION already published — skipping"
+            exit 0
+          fi
+
+          if pnpm --filter @uaif/cli publish --access public --no-git-checks; then
+            echo "status=published" >> "$GITHUB_OUTPUT"
+            echo "reason=" >> "$GITHUB_OUTPUT"
+            echo "@uaif/cli@$VERSION published"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "reason=publish_error" >> "$GITHUB_OUTPUT"
+            echo "@uaif/cli@$VERSION publish failed"
+            exit 1
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish adapters (clerk, firebase-auth, mongodb, cloudinary)
+      - name: Publish adapter-clerk
+        id: publish-clerk
         run: |
-          pnpm --filter @uaif/adapter-clerk publish --access public --no-git-checks
-          pnpm --filter @uaif/adapter-firebase-auth publish --access public --no-git-checks
-          pnpm --filter @uaif/adapter-mongodb publish --access public --no-git-checks
-          pnpm --filter @uaif/adapter-cloudinary publish --access public --no-git-checks
+          VERSION="${{ steps.version.outputs.version }}"
+          if echo "${{ steps.check-existing.outputs.already }}" | grep -q "uaif/adapter-clerk"; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            echo "reason=already_published" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-clerk@$VERSION already published — skipping"
+            exit 0
+          fi
+
+          if pnpm --filter @uaif/adapter-clerk publish --access public --no-git-checks; then
+            echo "status=published" >> "$GITHUB_OUTPUT"
+            echo "reason=" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-clerk@$VERSION published"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "reason=publish_error" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-clerk@$VERSION publish failed"
+            exit 1
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish adapters (react, next, expo)
+      - name: Publish adapter-firebase-auth
+        id: publish-firebase-auth
         run: |
-          pnpm --filter @uaif/adapter-react publish --access public --no-git-checks
-          pnpm --filter @uaif/adapter-next publish --access public --no-git-checks
-          pnpm --filter @uaif/adapter-expo publish --access public --no-git-checks
+          VERSION="${{ steps.version.outputs.version }}"
+          if echo "${{ steps.check-existing.outputs.already }}" | grep -q "uaif/adapter-firebase-auth"; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            echo "reason=already_published" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-firebase-auth@$VERSION already published — skipping"
+            exit 0
+          fi
+
+          if pnpm --filter @uaif/adapter-firebase-auth publish --access public --no-git-checks; then
+            echo "status=published" >> "$GITHUB_OUTPUT"
+            echo "reason=" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-firebase-auth@$VERSION published"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "reason=publish_error" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-firebase-auth@$VERSION publish failed"
+            exit 1
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish adapter-mongodb
+        id: publish-mongodb
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if echo "${{ steps.check-existing.outputs.already }}" | grep -q "uaif/adapter-mongodb"; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            echo "reason=already_published" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-mongodb@$VERSION already published — skipping"
+            exit 0
+          fi
+
+          if pnpm --filter @uaif/adapter-mongodb publish --access public --no-git-checks; then
+            echo "status=published" >> "$GITHUB_OUTPUT"
+            echo "reason=" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-mongodb@$VERSION published"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "reason=publish_error" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-mongodb@$VERSION publish failed"
+            exit 1
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish adapter-cloudinary
+        id: publish-cloudinary
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if echo "${{ steps.check-existing.outputs.already }}" | grep -q "uaif/adapter-cloudinary"; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            echo "reason=already_published" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-cloudinary@$VERSION already published — skipping"
+            exit 0
+          fi
+
+          if pnpm --filter @uaif/adapter-cloudinary publish --access public --no-git-checks; then
+            echo "status=published" >> "$GITHUB_OUTPUT"
+            echo "reason=" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-cloudinary@$VERSION published"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "reason=publish_error" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-cloudinary@$VERSION publish failed"
+            exit 1
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish adapter-react
+        id: publish-react
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if echo "${{ steps.check-existing.outputs.already }}" | grep -q "uaif/adapter-react"; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            echo "reason=already_published" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-react@$VERSION already published — skipping"
+            exit 0
+          fi
+
+          if pnpm --filter @uaif/adapter-react publish --access public --no-git-checks; then
+            echo "status=published" >> "$GITHUB_OUTPUT"
+            echo "reason=" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-react@$VERSION published"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "reason=publish_error" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-react@$VERSION publish failed"
+            exit 1
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish adapter-next
+        id: publish-next
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if echo "${{ steps.check-existing.outputs.already }}" | grep -q "uaif/adapter-next"; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            echo "reason=already_published" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-next@$VERSION already published — skipping"
+            exit 0
+          fi
+
+          if pnpm --filter @uaif/adapter-next publish --access public --no-git-checks; then
+            echo "status=published" >> "$GITHUB_OUTPUT"
+            echo "reason=" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-next@$VERSION published"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "reason=publish_error" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-next@$VERSION publish failed"
+            exit 1
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish adapter-expo
+        id: publish-expo
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if echo "${{ steps.check-existing.outputs.already }}" | grep -q "uaif/adapter-expo"; then
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            echo "reason=already_published" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-expo@$VERSION already published — skipping"
+            exit 0
+          fi
+
+          if pnpm --filter @uaif/adapter-expo publish --access public --no-git-checks; then
+            echo "status=published" >> "$GITHUB_OUTPUT"
+            echo "reason=" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-expo@$VERSION published"
+          else
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            echo "reason=publish_error" >> "$GITHUB_OUTPUT"
+            echo "@uaif/adapter-expo@$VERSION publish failed"
+            exit 1
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Aggregate results
+        id: publish-results
+        if: always()
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+
+          declare -A STATUSES
+          STATUSES[core]="${{ steps.publish-core.outputs.status || 'failed' }}"
+          STATUSES[cli]="${{ steps.publish-cli.outputs.status || 'failed' }}"
+          STATUSES[clerk]="${{ steps.publish-clerk.outputs.status || 'failed' }}"
+          STATUSES[firebase-auth]="${{ steps.publish-firebase-auth.outputs.status || 'failed' }}"
+          STATUSES[mongodb]="${{ steps.publish-mongodb.outputs.status || 'failed' }}"
+          STATUSES[cloudinary]="${{ steps.publish-cloudinary.outputs.status || 'failed' }}"
+          STATUSES[react]="${{ steps.publish-react.outputs.status || 'failed' }}"
+          STATUSES[next]="${{ steps.publish-next.outputs.status || 'failed' }}"
+          STATUSES[expo]="${{ steps.publish-expo.outputs.status || 'failed' }}"
+
+          PUBLISHED=0
+          SKIPPED=0
+          FAILED=0
+
+          for key in core clerk firebase-auth mongodb cloudinary react next expo; do
+            case "${STATUSES[$key]}" in
+              published) PUBLISHED=$((PUBLISHED + 1)) ;;
+              skipped) SKIPPED=$((SKIPPED + 1)) ;;
+              *) FAILED=$((FAILED + 1)) ;;
+            esac
+          done
+
+          echo "published=$PUBLISHED" >> "$GITHUB_OUTPUT"
+          echo "skipped=$SKIPPED" >> "$GITHUB_OUTPUT"
+          echo "failed=$FAILED" >> "$GITHUB_OUTPUT"
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo "overall=failed" >> "$GITHUB_OUTPUT"
+          elif [ "$PUBLISHED" -eq 0 ] && [ "$SKIPPED" -gt 0 ]; then
+            echo "overall=already_published" >> "$GITHUB_OUTPUT"
+          else
+            echo "overall=success" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Write job summary
         if: always()
         run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PUBLISHED="${{ steps.publish-results.outputs.published }}"
+          SKIPPED="${{ steps.publish-results.outputs.skipped }}"
+          FAILED="${{ steps.publish-results.outputs.failed }}"
+          OVERALL="${{ steps.publish-results.outputs.overall }}"
+
           echo "## Publish to npm" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          VERSION="${{ steps.version.outputs.version }}"
 
-          if [ "${{ job.status }}" = "success" ]; then
-            echo "**Status:** ✅ All 9 packages published" >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo "**Status:** ❌ Publication failed" >> "$GITHUB_STEP_SUMMARY"
-          fi
+          case "$OVERALL" in
+            success)
+              echo "**Status:** ✅ All $PUBLISHED packages published" >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            already_published)
+              echo "**Status:** ⚠️ All packages already published at this version" >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            failed)
+              echo "**Status:** ❌ Publication failed ($FAILED packages failed)" >> "$GITHUB_STEP_SUMMARY"
+              ;;
+          esac
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "**Version:** \`$VERSION\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Published:** $PUBLISHED | **Already published:** $SKIPPED | **Failed:** $FAILED" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          show_status() {
+            case "$1" in
+              published) echo "✅ Published" ;;
+              skipped) echo "⏭️ Already published" ;;
+              failed) echo "❌ Failed" ;;
+              *) echo "❌ Not attempted" ;;
+            esac
+          }
+
           echo "| Package | Status |" >> "$GITHUB_STEP_SUMMARY"
           echo "|---------|--------|" >> "$GITHUB_STEP_SUMMARY"
-          echo "| @uaif/core | Published |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| @uaif/cli | Published |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| @uaif/adapter-clerk | Published |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| @uaif/adapter-firebase-auth | Published |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| @uaif/adapter-mongodb | Published |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| @uaif/adapter-cloudinary | Published |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| @uaif/adapter-react | Published |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| @uaif/adapter-next | Published |" >> "$GITHUB_STEP_SUMMARY"
-          echo "| @uaif/adapter-expo | Published |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/core | $(show_status "${{ steps.publish-core.outputs.status }}") |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/cli | $(show_status "${{ steps.publish-cli.outputs.status }}") |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-clerk | $(show_status "${{ steps.publish-clerk.outputs.status }}") |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-firebase-auth | $(show_status "${{ steps.publish-firebase-auth.outputs.status }}") |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-mongodb | $(show_status "${{ steps.publish-mongodb.outputs.status }}") |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-cloudinary | $(show_status "${{ steps.publish-cloudinary.outputs.status }}") |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-react | $(show_status "${{ steps.publish-react.outputs.status }}") |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-next | $(show_status "${{ steps.publish-next.outputs.status }}") |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| @uaif/adapter-expo | $(show_status "${{ steps.publish-expo.outputs.status }}") |" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$FAILED" -gt 0 ]; then
+            echo "" >> "$GITHUB_STEP_SUMMARY"
+            echo "> ⚠️ **Partial publication detected.** Some packages were published while others failed." >> "$GITHUB_STEP_SUMMARY"
+            echo "> npm versions are immutable. Do not re-run this release." >> "$GITHUB_STEP_SUMMARY"
+            echo "> Create a new patch release with the fix, or manually publish the failed packages." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   # ────────────────────────────────────────────────────────────
   # Job 3: Post-publish Verification
@@ -360,10 +657,10 @@ jobs:
 
           echo "Verifying $VERSION on npm (max $MAX_RETRIES attempts, ${RETRY_DELAY}s between)..."
 
-          ALL_PUBLISHED=0
+          ALL_VERIFIED=0
           for attempt in $(seq 1 $MAX_RETRIES); do
             echo "Attempt $attempt/$MAX_RETRIES..."
-            ALL_PUBLISHED=1
+            ALL_VERIFIED=1
             FAILED_PACKAGES=""
 
             for pkg in "${PACKAGES[@]}"; do
@@ -372,12 +669,12 @@ jobs:
                 echo "  $pkg@$VERSION — available"
               else
                 echo "  $pkg@$VERSION — NOT YET (got: ${PUBLISHED:-not found})"
-                ALL_PUBLISHED=0
+                ALL_VERIFIED=0
                 FAILED_PACKAGES="$FAILED_PACKAGES $pkg"
               fi
             done
 
-            if [ "$ALL_PUBLISHED" -eq 1 ]; then
+            if [ "$ALL_VERIFIED" -eq 1 ]; then
               echo "All packages verified on attempt $attempt"
               break
             fi
@@ -388,7 +685,7 @@ jobs:
             fi
           done
 
-          if [ "$ALL_PUBLISHED" -ne 1 ]; then
+          if [ "$ALL_VERIFIED" -ne 1 ]; then
             echo "::error::Packages not found after $MAX_RETRIES attempts:$FAILED_PACKAGES"
             exit 1
           fi
@@ -396,6 +693,7 @@ jobs:
           echo "verified=true" >> "$GITHUB_OUTPUT"
 
       - name: Validate workspace dependency resolution
+        id: workspace-deps
         run: |
           VERSION="${{ needs.publish.outputs.version }}"
 
@@ -433,8 +731,12 @@ jobs:
           done
 
           if [ "$ISSUES" -eq 1 ]; then
-            echo "::warning::Some workspace:* dependencies were not resolved correctly"
+            echo "workspace_deps_ok=false" >> "$GITHUB_OUTPUT"
+            echo "::error::Workspace dependency resolution failed — published packages have incorrect internal dependency versions"
+            exit 1
           fi
+
+          echo "workspace_deps_ok=true" >> "$GITHUB_OUTPUT"
 
       - name: Write job summary
         if: always()
@@ -443,8 +745,12 @@ jobs:
           echo "## Post-publish Verification" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
 
-          if [ "${{ steps.verify.outcome }}" = "success" ]; then
-            echo "**Status:** ✅ All packages verified on npm" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.verify.outcome }}" = "success" ] && [ "${{ steps.workspace-deps.outcome }}" = "success" ]; then
+            echo "**Status:** ✅ All packages verified, workspace dependencies resolved correctly" >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ steps.verify.outcome }}" = "failure" ]; then
+            echo "**Status:** ❌ Package verification failed" >> "$GITHUB_STEP_SUMMARY"
+          elif [ "${{ steps.workspace-deps.outcome }}" = "failure" ]; then
+            echo "**Status:** ❌ Workspace dependency resolution failed" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "**Status:** ❌ Verification failed" >> "$GITHUB_STEP_SUMMARY"
           fi

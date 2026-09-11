@@ -79,10 +79,11 @@ This creates both the Git tag and GitHub Release in one step.
 Once the GitHub Release is published, the `release.yml` workflow runs automatically:
 
 1. **Validation** — Lint, typecheck, format, build, test, version consistency, metadata, READMEs, npm pack dry-run. Builds from the exact tagged commit.
-2. **Publish** — Publishes `@uaif/core` first (dependency root), then `@uaif/cli`, then all 7 adapters
-3. **Verify** — Bounded-retry npm availability check (6 attempts, 30s intervals) plus workspace dependency resolution validation
+2. **Existing check** — Queries npm for each package to detect already-published versions
+3. **Publish** — Publishes `@uaif/core` first (dependency root), then `@uaif/cli`, then all 7 adapters. Each package is published individually with per-package status tracking (published / already published / failed).
+4. **Verify** — Bounded-retry npm availability check (6 attempts, 30s intervals) plus workspace dependency resolution validation (fails the release if broken)
 
-The workflow also writes a GitHub Actions job summary with publication status and npm links for each package.
+The workflow writes a GitHub Actions job summary showing per-package status (✅ Published / ⏭️ Already published / ❌ Failed) and npm links for each package.
 
 ### 6. Post-release
 
@@ -122,6 +123,17 @@ npm propagation can take up to 5 minutes. The verification step uses bounded ret
 ### workflow_dispatch behavior
 
 The `workflow_dispatch` trigger only runs in dry-run mode — it validates but does NOT publish. This is a safety guardrail: accidental manual dispatches cannot publish to npm. To publish, always create a GitHub Release instead.
+
+### Partial publication (some packages published, some failed)
+
+npm versions are immutable. If a release partially fails (e.g., 7 of 9 packages published), do not re-run the same release. Options:
+
+1. Create a new patch release with the fix
+2. Manually publish the failed packages: `npm publish --access public` (from the package directory)
+
+### Re-running a release
+
+If you re-run the same GitHub Release, already-published packages are automatically skipped. Only packages that were not yet published will be attempted.
 
 ### Dry run failed but I want to publish anyway
 
