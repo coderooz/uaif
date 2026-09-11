@@ -56,7 +56,7 @@ jobs:
       || github.event_name == 'release'
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.release.tag_name || '' }}
 
@@ -252,7 +252,7 @@ jobs:
       results: ${{ steps.publish-results.outputs.results }}
     steps:
       - name: Checkout release commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.release.tag_name }}
 
