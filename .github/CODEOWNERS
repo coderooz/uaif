@@ -10,5 +10,8 @@ packages/cli/ @coderooz
 # Adapters
 packages/adapters/ @coderooz
 
-# Registry
-registry/ @coderooz
+# Documentation
+docs/ @coderooz
+
+# CI/CD
+.github/ @coderooz
